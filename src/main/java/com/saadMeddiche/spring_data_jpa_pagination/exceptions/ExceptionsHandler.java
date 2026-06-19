@@ -4,6 +4,7 @@ import com.saadMeddiche.spring_data_jpa_pagination.exceptions.customs.Validation
 import com.saadMeddiche.spring_data_jpa_pagination.exceptions.models.ErrorResponse;
 import com.saadMeddiche.spring_data_jpa_pagination.exceptions.models.FieldError;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class ExceptionsHandler {
 
@@ -52,6 +54,8 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+
+        log.error(ex.getMessage(), ex);
 
         ErrorResponse response = ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
