@@ -25,4 +25,9 @@ public class PersonController {
         return this.personService.slice(pageable);
     }
 
+    @GetMapping("/improved-summary")
+    public Slice<PersonSummaryResponse> improvedSummary(Pageable pageable) {
+        return this.personService.improvedSummary(pageable);
+    }
+
 }

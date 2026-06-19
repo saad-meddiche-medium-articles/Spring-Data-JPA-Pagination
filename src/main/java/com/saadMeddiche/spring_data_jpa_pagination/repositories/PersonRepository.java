@@ -24,4 +24,13 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
            """)
     Slice<PersonSummaryResponse> slice(Pageable pageable);
 
+    @Query(value =
+           """
+           SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
+           FROM Person p LEFT JOIN p.products pp
+           GROUP BY p.id, p.firstName, p.lastName order by p.id
+           """,
+           countQuery = "SELECT COUNT(p) FROM Person p")
+    Page<PersonSummaryResponse> improvedSummary(Pageable pageable);
+
 }

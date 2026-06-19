@@ -22,4 +22,8 @@ public class PersonService {
         return personRepository.slice(pageable);
     }
 
+    public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
+        return personRepository.improvedSummary(pageable);
+    }
+
 }
