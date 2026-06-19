@@ -17,5 +17,10 @@ spring.jpa.properties.hibernate.order_inserts: true
 spring.web.error:
   include-message: always
 
+person-seeder:
+  count: 1000000
+  chunk-size: 25000
+  enabled: true
+
 #logging.level.net.ttddyy:
 #  dsproxy.listener: debug

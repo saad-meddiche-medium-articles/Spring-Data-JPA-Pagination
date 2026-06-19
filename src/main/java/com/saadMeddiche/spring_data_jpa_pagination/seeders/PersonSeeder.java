@@ -1,5 +1,6 @@
 package com.saadMeddiche.spring_data_jpa_pagination.seeders;
 
+import com.saadMeddiche.spring_data_jpa_pagination.configuration.PersonSeederConfig;
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
 import com.saadMeddiche.spring_data_jpa_pagination.repositories.PersonRepository;
 import jakarta.persistence.EntityManager;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,12 +16,11 @@ import java.util.List;
 
 @Component @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnBooleanProperty(prefix = "person-seeder", value = "enabled")
 public class PersonSeeder implements CommandLineRunner {
 
-    private final static long COUNT = 1_000_000;
-    private final static int CHUNK_SIZE = 25_000;
-
     private final Faker faker;
+    private final PersonSeederConfig config;
     private final EntityManager entityManager;
     private final PersonRepository personRepository;
 
@@ -41,12 +42,12 @@ public class PersonSeeder implements CommandLineRunner {
     private void main_process() {
 
         // Haha it sounds weird
-        List<Person> chunkOfPeople = new ArrayList<>(CHUNK_SIZE);
+        List<Person> chunkOfPeople = new ArrayList<>(config.getChunkSize());
 
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < config.getCount(); i++) {
 
-            if(chunkOfPeople.size() == CHUNK_SIZE) {
-                log.info("Inserting chunk#{}", i / CHUNK_SIZE );
+            if(chunkOfPeople.size() == config.getChunkSize()) {
+                log.info("Inserting chunk#{}", i / config.getChunkSize() );
                 this.save_chunk_and_clear(chunkOfPeople);
             }
 
