@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("person-seeder")
 public class PersonSeederConfig {
 
-    private long count = 1_000_000;
+    private long personCount = 1_000_000;
+
+    private int productPerPerson = 2;
 
     private int chunkSize = 25_000;
 

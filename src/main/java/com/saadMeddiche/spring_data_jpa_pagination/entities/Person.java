@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,16 @@ public class Person {
     private @Nullable LocalDate birthDate;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
+
+    public void addProduct(Product product) {
+
+        if(product == null || this.products.contains(product)) return;
+
+        product.setOwner(this);
+
+        this.products.add(product);
+
+    }
 
 }

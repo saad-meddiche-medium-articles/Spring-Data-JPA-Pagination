@@ -11,15 +11,16 @@ spring.datasource:
 spring.jpa:
   hibernate.ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:update}
 
-spring.jpa.properties.hibernate.jdbc.batch_size: 25000
+spring.jpa.properties.hibernate.jdbc.batch_size: ${person-seeder.chunk-size}
 spring.jpa.properties.hibernate.order_inserts: true
 
 spring.web.error:
   include-message: always
 
 person-seeder:
-  count: 1000000
-  chunk-size: 25000
+  person-count: 1_000_000
+  product-per-person: 2
+  chunk-size: 25_000
   enabled: true
 
 #logging.level.net.ttddyy:
