@@ -21,7 +21,7 @@ person-seeder:
   person-count: 1_000_000
   product-per-person: 2
   chunk-size: 25_000
-  enabled: true
+  enabled: false
 
-#logging.level.net.ttddyy:
-#  dsproxy.listener: debug
+logging.level.net.ttddyy:
+  dsproxy.listener: debug
