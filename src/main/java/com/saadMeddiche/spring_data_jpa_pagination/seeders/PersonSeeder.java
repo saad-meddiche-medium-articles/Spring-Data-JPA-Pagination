@@ -2,6 +2,7 @@ package com.saadMeddiche.spring_data_jpa_pagination.seeders;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
 import com.saadMeddiche.spring_data_jpa_pagination.repositories.PersonRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -15,9 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PersonSeeder implements CommandLineRunner {
 
-    private final static long count = 1_000_000;
+    private final static long COUNT = 1_000_000;
+    private final static int CHUNK_SIZE = 25_000;
 
     private final Faker faker;
+    private final EntityManager entityManager;
     private final PersonRepository personRepository;
 
     @Override
@@ -27,22 +30,43 @@ public class PersonSeeder implements CommandLineRunner {
 
         long start = System.currentTimeMillis();
 
-        List<Person> people = new ArrayList<>();
-
-        for (int i = 0; i < count; i++) {
-
-            Person person = this.createPerson();
-
-            people.add(person);
-
-        }
-
-        this.personRepository.saveAll(people);
+        this.main_process();
 
         long end = System.currentTimeMillis();
 
         log.info("Finished seeding in {}ms", (end - start));
 
+    }
+
+    private void main_process() {
+
+        // Haha it sounds weird
+        List<Person> chunkOfPeople = new ArrayList<>(CHUNK_SIZE);
+
+        for (int i = 0; i < COUNT; i++) {
+
+            if(chunkOfPeople.size() == CHUNK_SIZE) {
+                log.info("Inserting chunk#{}", i / CHUNK_SIZE );
+                this.save_chunk_and_clear(chunkOfPeople);
+            }
+
+            Person person = this.createPerson();
+
+            chunkOfPeople.add(person);
+
+        }
+
+        if(!chunkOfPeople.isEmpty()) {
+            log.info("Inserting last chunk");
+            this.save_chunk_and_clear(chunkOfPeople);
+        }
+
+    }
+
+    private void save_chunk_and_clear(List<Person> chunkOfPeople) {
+        this.personRepository.saveAll(chunkOfPeople);
+        chunkOfPeople.clear();
+        this.entityManager.clear();
     }
 
     private Person createPerson() {
@@ -54,6 +78,7 @@ public class PersonSeeder implements CommandLineRunner {
         person.setBirthDate(faker.timeAndDate().birthday());
 
         return person;
+
     }
 
 }
