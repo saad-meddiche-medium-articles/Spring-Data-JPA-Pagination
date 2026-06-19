@@ -5,6 +5,7 @@ import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryRespons
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,10 @@ public class PersonService {
 
     public Page<PersonSummaryResponse> summary(Pageable pageable) {
         return personRepository.summary(pageable);
+    }
+
+    public Slice<PersonSummaryResponse> slice(Pageable pageable) {
+        return personRepository.slice(pageable);
     }
 
 }
