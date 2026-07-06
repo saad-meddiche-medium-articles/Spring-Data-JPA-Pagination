@@ -1,4 +1,5 @@
-GET http://localhost:8080/persons/improved-summary?size=10&page=99999
+# @timeout 120s
+GET http://localhost:8080/persons/improved-summary?size=10&page=999999
 Accept: application/json
 
 ###
