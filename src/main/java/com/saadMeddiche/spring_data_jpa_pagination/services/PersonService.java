@@ -29,19 +29,13 @@ public class PersonService {
 
     public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
 
-        Pageable pageableWithForcedSort = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by("id").ascending()
-        );
+        List<Long> personIds = personRepository.improvedSummary(pageable);
 
-        List<Long> personIds = personRepository.improvedSummary(pageableWithForcedSort);
+        List<PersonSummaryResponse> content = personRepository.improvedSummary(personIds);
 
-        List<PersonSummaryResponse> content = personRepository.improvedSummary(personIds, pageableWithForcedSort.getSort());
+        long totalPersons = personRepository.simpleCount();
 
-        long totalPersons = personRepository.count();
-
-        return new PageImpl<>(content, pageableWithForcedSort , totalPersons);
+        return new PageImpl<>(content, pageable , totalPersons);
 
     }
 

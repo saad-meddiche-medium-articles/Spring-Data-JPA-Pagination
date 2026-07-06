@@ -50,6 +50,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             WHERE p.id in :personsIds
             GROUP BY p.id, p.firstName, p.lastName
             """)
-    List<PersonSummaryResponse> improvedSummary(Collection<Long> personsIds, Sort sort);
+    List<PersonSummaryResponse> improvedSummary(Collection<Long> personsIds);
+
+    @Query(value = """
+            SELECT COUNT(p.id) FROM Person p
+            """)
+    long simpleCount();
 
 }
