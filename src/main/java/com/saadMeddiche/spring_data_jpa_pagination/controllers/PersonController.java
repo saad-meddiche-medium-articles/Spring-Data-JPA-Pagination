@@ -25,8 +25,13 @@ public class PersonController {
         return this.personService.slice(pageable);
     }
 
+    @GetMapping("/summary-custom-count")
+    public Page<PersonSummaryResponse> summaryCustomCount(Pageable pageable) {
+        return this.personService.summaryCustomCount(pageable);
+    }
+
     @GetMapping("/improved-summary")
-    public Slice<PersonSummaryResponse> improvedSummary(Pageable pageable) {
+    public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
         return this.personService.improvedSummary(pageable);
     }
 
