@@ -15,14 +15,11 @@ public class PersonController {
 
     private final PersonService personService;
 
+    // ================= Using Page =================
+
     @GetMapping("/summary")
     public Page<PersonSummaryResponse> personSummary(Pageable pageable) {
         return this.personService.summary(pageable);
-    }
-
-    @GetMapping("/slice")
-    public Slice<PersonSummaryResponse> personSlice(Pageable pageable) {
-        return this.personService.slice(pageable);
     }
 
     @GetMapping("/summary-custom-count")
@@ -33,6 +30,13 @@ public class PersonController {
     @GetMapping("/improved-summary")
     public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
         return this.personService.improvedSummary(pageable);
+    }
+
+    // ================= Using Slice =================
+
+    @GetMapping("/slice")
+    public Slice<PersonSummaryResponse> slice(Pageable pageable) {
+        return this.personService.slice(pageable);
     }
 
 }
