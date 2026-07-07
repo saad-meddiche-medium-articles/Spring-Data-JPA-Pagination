@@ -36,6 +36,10 @@ public class PersonService {
 
     }
 
+    public Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable) {
+        return personRepository.summaryWithoutCount(pageable);
+    }
+
     // ================= Using Slice =================
 
     public Slice<PersonSummaryResponse> slice(Pageable pageable) {
@@ -50,6 +54,10 @@ public class PersonService {
 
         return new SliceImpl<>(content, pageable, slicePersonIds.hasNext());
 
+    }
+
+    public Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable) {
+        return personRepository.sliceWithoutCount(pageable);
     }
 
 }

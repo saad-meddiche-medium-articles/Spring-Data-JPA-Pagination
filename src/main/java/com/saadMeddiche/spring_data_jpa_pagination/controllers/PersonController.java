@@ -32,6 +32,11 @@ public class PersonController {
         return this.personService.improvedSummary(pageable);
     }
 
+    @GetMapping("/summary-without-count")
+    public Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable) {
+        return this.personService.summaryWithoutCount(pageable);
+    }
+
     // ================= Using Slice =================
 
     @GetMapping("/slice")
@@ -42,6 +47,11 @@ public class PersonController {
     @GetMapping("/improved-slice")
     public Slice<PersonSummaryResponse> improvedSlice(Pageable pageable) {
         return this.personService.improvedSlice(pageable);
+    }
+
+    @GetMapping("/slice-without-count")
+    public Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable) {
+        return this.personService.sliceWithoutCount(pageable);
     }
 
 }

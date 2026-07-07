@@ -5,7 +5,6 @@ import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryRespons
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -47,6 +46,12 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             """)
     List<PersonSummaryResponse> improvedSummary(Collection<Long> personsIds);
 
+    @Query(value =
+            """
+            SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
+            """)
+    Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable);
+
     @Query(value = """
             SELECT COUNT(p.id) FROM Person p
             """)
@@ -75,5 +80,10 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             GROUP BY p.id, p.firstName, p.lastName
             """)
     List<PersonSummaryResponse> improvedSlice(Collection<Long> personsIds);
+
+    @Query("""
+           SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
+           """)
+    Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable);
 
 }
