@@ -39,4 +39,9 @@ public class PersonController {
         return this.personService.slice(pageable);
     }
 
+    @GetMapping("/improved-slice")
+    public Slice<PersonSummaryResponse> improvedSlice(Pageable pageable) {
+        return this.personService.improvedSlice(pageable);
+    }
+
 }

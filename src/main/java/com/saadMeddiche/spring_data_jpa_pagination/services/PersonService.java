@@ -42,4 +42,14 @@ public class PersonService {
         return personRepository.slice(pageable);
     }
 
+    public Slice<PersonSummaryResponse> improvedSlice(Pageable pageable) {
+
+        Slice<Long> slicePersonIds = personRepository.improvedSlice(pageable);
+
+        List<PersonSummaryResponse> content = personRepository.improvedSlice(slicePersonIds.getContent());
+
+        return new SliceImpl<>(content, pageable, slicePersonIds.hasNext());
+
+    }
+
 }
