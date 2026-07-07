@@ -7,7 +7,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,12 +14,10 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
+    // ================= Using Page =================
+
     public Page<PersonSummaryResponse> summary(Pageable pageable) {
         return personRepository.summary(pageable);
-    }
-
-    public Slice<PersonSummaryResponse> slice(Pageable pageable) {
-        return personRepository.slice(pageable);
     }
 
     public Page<PersonSummaryResponse> summaryCustomCount(Pageable pageable) {
@@ -37,6 +34,12 @@ public class PersonService {
 
         return new PageImpl<>(content, pageable , totalPersons);
 
+    }
+
+    // ================= Using Slice =================
+
+    public Slice<PersonSummaryResponse> slice(Pageable pageable) {
+        return personRepository.slice(pageable);
     }
 
 }
