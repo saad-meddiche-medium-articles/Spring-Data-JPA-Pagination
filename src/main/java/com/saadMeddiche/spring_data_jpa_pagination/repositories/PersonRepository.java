@@ -14,19 +14,14 @@ import java.util.List;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
-    @Query("""
-           SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
-           FROM Person p LEFT JOIN p.products pp
-           GROUP BY p.id, p.firstName, p.lastName order by p.id
-           """)
-    Page<PersonSummaryResponse> summary(Pageable pageable);
+    // ================= Using Page =================
 
     @Query("""
            SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
            FROM Person p LEFT JOIN p.products pp
            GROUP BY p.id, p.firstName, p.lastName order by p.id
            """)
-    Slice<PersonSummaryResponse> slice(Pageable pageable);
+    Page<PersonSummaryResponse> summary(Pageable pageable);
 
     @Query(value =
             """
@@ -56,6 +51,15 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             SELECT COUNT(p.id) FROM Person p
             """)
     long simpleCount();
+
+    // ================= Using Slice =================
+
+    @Query("""
+           SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
+           FROM Person p LEFT JOIN p.products pp
+           GROUP BY p.id, p.firstName, p.lastName order by p.id
+           """)
+    Slice<PersonSummaryResponse> slice(Pageable pageable);
 
     @Query(value =
             """
