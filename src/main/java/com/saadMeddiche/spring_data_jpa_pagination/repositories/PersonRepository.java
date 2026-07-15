@@ -1,10 +1,9 @@
 package com.saadMeddiche.spring_data_jpa_pagination.repositories;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
+import com.saadMeddiche.spring_data_jpa_pagination.response.PersonProductCount;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -85,5 +84,18 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
            SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
            """)
     Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable);
+
+    // ================= Using Window =================
+
+    Window<Person> findFirst10ByOrderByIdAsc(KeysetScrollPosition position);
+
+    @Query(value =
+            """
+            SELECT p.id, COUNT(pp.id)
+            FROM Person p LEFT JOIN p.products pp
+            WHERE p.id in :personsIds
+            GROUP BY p.id
+            """)
+    List<PersonProductCount> findPersonProductCount(List<Long> personsIds);
 
 }

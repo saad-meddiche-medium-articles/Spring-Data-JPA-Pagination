@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Window;
 import org.springframework.web.bind.annotation.*;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import com.saadMeddiche.spring_data_jpa_pagination.services.PersonService;
@@ -52,6 +53,13 @@ public class PersonController {
     @GetMapping("/slice-without-count")
     public Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable) {
         return this.personService.sliceWithoutCount(pageable);
+    }
+
+    // ================= Using Window =================
+
+    @GetMapping("/window")
+    public Window<PersonSummaryResponse> window(@RequestParam(required = false) Long lastSeenId) {
+        return this.personService.window(lastSeenId);
     }
 
 }
