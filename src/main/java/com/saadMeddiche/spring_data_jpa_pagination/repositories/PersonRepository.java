@@ -32,7 +32,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     @Query(value =
            """
-           SELECT p.id FROM Person p
+           SELECT p.id FROM Person p order by p.id
            """)
     List<Long> improvedSummary(Pageable pageable);
 
