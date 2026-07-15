@@ -45,7 +45,8 @@
         <th>Product count</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="person-table-body"
+           th:attr="data-next-cursor=${nextCursor},data-has-next=${hasNext}">
     <tr th:each="person : ${items}">
         <td th:text="${person.id}">1</td>
         <td th:text="${person.firstName}">John</td>
@@ -55,20 +56,127 @@
     </tbody>
 </table>
 
-<nav aria-label="Cursor navigation">
-    <ul class="pagination">
+<p class="text-muted">Scroll down to load more results.</p>
 
-        <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
-            <a class="page-link"
-               th:if="${hasNext}"
-               th:href="@{/persons/view/window(lastSeenId=${nextCursor}, variant=${variant})}">
-                Next
-            </a>
-            <span class="page-link" th:unless="${hasNext}">Next</span>
-        </li>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('[window.html] DOMContentLoaded fired');
 
-    </ul>
-</nav>
+    const tbody = document.getElementById('person-table-body');
+    if (!tbody) {
+        console.log('[window.html] tbody#person-table-body not found');
+        return;
+    }
+
+    let loading = false;
+    let hasNext = tbody.dataset.hasNext === 'true';
+    let nextCursor = tbody.dataset.nextCursor || null;
+    const loadThreshold = 200; // px from bottom to start loading
+
+    console.log('[window.html] initial state', {
+        hasNext,
+        nextCursor,
+        loadThreshold,
+        initialBodyHeight: document.body.offsetHeight,
+        viewportHeight: window.innerHeight
+    });
+
+    async function loadNextPage(source) {
+        console.log('[window.html] loadNextPage called', {
+            source,
+            hasNext,
+            loading,
+            nextCursor
+        });
+
+        if (!hasNext || loading || !nextCursor) {
+            console.log('[window.html] loadNextPage aborted', {
+                reason: !hasNext ? 'no-more-pages' : (!nextCursor ? 'no-cursor' : 'already-loading')
+            });
+            return;
+        }
+
+        loading = true;
+        try {
+            const url = '/persons/window?lastSeenId=' + encodeURIComponent(nextCursor);
+            console.log('[window.html] fetching', url);
+            const resp = await fetch(url);
+            console.log('[window.html] fetch response', { status: resp.status });
+
+            if (!resp.ok) {
+                console.log('[window.html] response not ok, stopping further loads');
+                hasNext = false;
+                return;
+            }
+
+            const data = await resp.json();
+            console.log('[window.html] parsed JSON', data);
+
+            const items = Array.isArray(data.content) ? data.content : [];
+            console.log('[window.html] items received', { count: items.length });
+
+            if (items.length === 0) {
+                console.log('[window.html] empty page, stopping further loads');
+                hasNext = false;
+                nextCursor = null;
+                return;
+            }
+
+            for (const person of items) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '' +
+                    '<td>' + person.id + '</td>' +
+                    '<td>' + person.firstName + '</td>' +
+                    '<td>' + person.lastName + '</td>' +
+                    '<td>' + person.productCount + '</td>';
+                tbody.appendChild(tr);
+            }
+
+            // Window JSON does not expose hasNext; it exposes `last` instead.
+            // If `last` is false, there is another window available.
+            hasNext = data.last === false;
+            nextCursor = items[items.length - 1].id != null ? items[items.length - 1].id : null;
+
+            console.log('[window.html] state after append', {
+                hasNext,
+                nextCursor,
+                bodyHeight: document.body.offsetHeight
+            });
+        } catch (e) {
+            console.log('[window.html] error during loadNextPage', e);
+            hasNext = false;
+            nextCursor = null;
+        } finally {
+            loading = false;
+        }
+    }
+
+    function onScroll() {
+        const scrolledToBottom =
+            window.innerHeight + window.scrollY >= document.body.offsetHeight - loadThreshold;
+
+        console.log('[window.html] scroll', {
+            scrollY: window.scrollY,
+            innerHeight: window.innerHeight,
+            bodyHeight: document.body.offsetHeight,
+            scrolledToBottom
+        });
+
+        if (scrolledToBottom) {
+            loadNextPage('scroll');
+        }
+    }
+
+    window.addEventListener('scroll', onScroll);
+    console.log('[window.html] scroll listener attached');
+
+    // If initial content is shorter than the viewport, pre-load next window once.
+    if (document.body.offsetHeight <= window.innerHeight && hasNext && nextCursor) {
+        console.log('[window.html] auto-loading initial extra page because content < viewport');
+        loadNextPage('initial');
+    }
+});
+</script>
 
 </body>
 </html>
