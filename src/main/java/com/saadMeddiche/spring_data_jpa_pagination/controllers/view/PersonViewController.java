@@ -59,11 +59,11 @@ public class PersonViewController {
         Pageable pageable = PageRequest.of(zeroBasedPage, size);
 
         Page<PersonSummaryResponse> summaryPage = switch (variant) {
-            case "summaryCustomCount" -> personService.page_customCount(pageable);
-            case "improvedSummary" -> personService.page_improved(pageable);
-            case "summaryWithoutCount" -> personService.page_withoutCount(pageable);
-            case "summary" -> personService.page_(pageable);
-            default -> personService.page_(pageable);
+            case "summaryCustomCount" -> personService.page_customCount(pageable, filter);
+            case "improvedSummary" -> personService.page_improved(pageable, filter);
+            case "summaryWithoutCount" -> personService.page_withoutCount(pageable, filter);
+            case "summary" -> personService.page_(pageable, filter);
+            default -> personService.page_(pageable, filter);
         };
 
         int totalPages = summaryPage.getTotalPages();
@@ -92,6 +92,7 @@ public class PersonViewController {
     // Slice-based pagination with multiple variants
     @GetMapping("/slice")
     public String slice(
+            @ModelAttribute PersonSummaryFilterRequest filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "improvedSlice") String variant,
@@ -100,14 +101,15 @@ public class PersonViewController {
         Pageable pageable = PageRequest.of(page, size);
 
         Slice<PersonSummaryResponse> slice = switch (variant) {
-            case "slice" -> personService.slice(pageable);
-            case "improvedSlice" -> personService.slice_improved(pageable);
-            case "sliceWithoutCount" -> personService.slice_withoutCount(pageable);
-            default -> personService.slice_withoutCount(pageable);
+            case "slice" -> personService.slice(pageable, filter);
+            case "improvedSlice" -> personService.slice_improved(pageable, filter);
+            case "sliceWithoutCount" -> personService.slice_withoutCount(pageable, filter);
+            default -> personService.slice_withoutCount(pageable, filter);
         };
 
         model.addAttribute("slice", slice);
         model.addAttribute("variant", variant);
+        model.addAttribute("filter", filter);
         return "slice";
     }
 
@@ -116,9 +118,10 @@ public class PersonViewController {
     public String window(
             @RequestParam(required = false) Long lastSeenId,
             @RequestParam(defaultValue = "default") String variant,
+            @ModelAttribute PersonSummaryFilterRequest filter,
             Model model
     ) {
-        Window<PersonSummaryResponse> window = personService.window(lastSeenId);
+        Window<PersonSummaryResponse> window = personService.window(lastSeenId, filter);
         List<PersonSummaryResponse> content = window.getContent();
 
         boolean hasNext = window.hasNext();
@@ -137,6 +140,7 @@ public class PersonViewController {
         model.addAttribute("nextCursor", nextCursor);
         model.addAttribute("prevCursor", prevCursor);
         model.addAttribute("variant", variant);
+        model.addAttribute("filter", filter);
         return "window";
     }
 }

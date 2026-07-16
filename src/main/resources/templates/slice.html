@@ -23,6 +23,38 @@
     <input type="hidden" name="size" th:value="${slice.size}"/>
 
     <div class="col-auto">
+        <label for="fullName" class="col-form-label">Name:</label>
+    </div>
+    <div class="col-auto">
+        <input id="fullName" type="text" class="form-control" name="fullName"
+               th:value="${filter.fullName}" placeholder="Search by name"/>
+    </div>
+
+    <div class="col-auto">
+        <label for="birthDateFrom" class="col-form-label">Birth from:</label>
+    </div>
+    <div class="col-auto">
+        <input id="birthDateFrom" type="date" class="form-control" name="birthDateFrom"
+               th:value="${filter.birthDateFrom}"/>
+    </div>
+
+    <div class="col-auto">
+        <label for="birthDateTo" class="col-form-label">Birth to:</label>
+    </div>
+    <div class="col-auto">
+        <input id="birthDateTo" type="date" class="form-control" name="birthDateTo"
+               th:value="${filter.birthDateTo}"/>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+    <div class="col-auto">
+        <a class="btn btn-secondary"
+           th:href="@{/persons/view/slice(page=0, size=${slice.size}, variant=${variant})}">Clear</a>
+    </div>
+
+    <div class="col-auto">
         <label for="variant" class="col-form-label">Version:</label>
     </div>
     <div class="col-auto">
@@ -67,14 +99,14 @@
 
         <li class="page-item" th:classappend="${!slice.hasPrevious()} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/slice(page=${slice.number - 1}, size=${slice.size}, variant=${variant})}">
+               th:href="@{/persons/view/slice(page=${slice.number - 1}, size=${slice.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 Previous
             </a>
         </li>
 
         <li class="page-item" th:classappend="${!slice.hasNext()} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/slice(page=${slice.number + 1}, size=${slice.size}, variant=${variant})}">
+               th:href="@{/persons/view/slice(page=${slice.number + 1}, size=${slice.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 Next
             </a>
         </li>

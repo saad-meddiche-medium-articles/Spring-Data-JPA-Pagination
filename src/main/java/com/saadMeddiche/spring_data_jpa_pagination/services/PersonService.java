@@ -2,6 +2,7 @@ package com.saadMeddiche.spring_data_jpa_pagination.services;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
 import com.saadMeddiche.spring_data_jpa_pagination.repositories.PersonRepository;
+import com.saadMeddiche.spring_data_jpa_pagination.requests.PersonSummaryFilterRequest;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -19,39 +20,39 @@ public class PersonService {
 
     // ================= Using Page =================
 
-    public Page<PersonSummaryResponse> page_(Pageable pageable) {
-        return personRepository.page_(pageable);
+    public Page<PersonSummaryResponse> page_(Pageable pageable, PersonSummaryFilterRequest filter) {
+        return personRepository.page_(pageable, filter);
     }
 
-    public Page<PersonSummaryResponse> page_customCount(Pageable pageable) {
-        return personRepository.page_customCount(pageable);
+    public Page<PersonSummaryResponse> page_customCount(Pageable pageable, PersonSummaryFilterRequest filter) {
+        return personRepository.page_customCount(pageable, filter);
     }
 
-    public Page<PersonSummaryResponse> page_improved(Pageable pageable) {
+    public Page<PersonSummaryResponse> page_improved(Pageable pageable, PersonSummaryFilterRequest filter) {
 
-        List<Long> personIds = personRepository.page_improved(pageable);
+        List<Long> personIds = personRepository.page_improved(pageable, filter);
 
         List<PersonSummaryResponse> content = personRepository.findSummaryByIds(personIds);
 
-        long totalPersons = personRepository.simpleCount();
+        long totalPersons = personRepository.simpleCount(filter);
 
         return new PageImpl<>(content, pageable , totalPersons);
 
     }
 
-    public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable) {
-        return personRepository.page_withoutCount(pageable);
+    public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable, PersonSummaryFilterRequest filter) {
+        return personRepository.page_withoutCount(pageable, filter);
     }
 
     // ================= Using Slice =================
 
-    public Slice<PersonSummaryResponse> slice(Pageable pageable) {
-        return personRepository.slice(pageable);
+    public Slice<PersonSummaryResponse> slice(Pageable pageable, PersonSummaryFilterRequest filter) {
+        return personRepository.slice(pageable, filter);
     }
 
-    public Slice<PersonSummaryResponse> slice_improved(Pageable pageable) {
+    public Slice<PersonSummaryResponse> slice_improved(Pageable pageable, PersonSummaryFilterRequest filter) {
 
-        Slice<Long> slicePersonIds = personRepository.slice_improved(pageable);
+        Slice<Long> slicePersonIds = personRepository.slice_improved(pageable, filter);
 
         List<PersonSummaryResponse> content = personRepository.findSummaryByIds(slicePersonIds.getContent());
 
@@ -59,13 +60,13 @@ public class PersonService {
 
     }
 
-    public Slice<PersonSummaryResponse> slice_withoutCount(Pageable pageable) {
-        return personRepository.slice_withoutCount(pageable);
+    public Slice<PersonSummaryResponse> slice_withoutCount(Pageable pageable, PersonSummaryFilterRequest filter) {
+        return personRepository.slice_withoutCount(pageable, filter);
     }
 
     // ================= Using Window =================
 
-    public Window<PersonSummaryResponse> window(Long lastSeenId) {
+    public Window<PersonSummaryResponse> window(Long lastSeenId, PersonSummaryFilterRequest filter) {
 
         KeysetScrollPosition position = ScrollPosition.keyset();
 
