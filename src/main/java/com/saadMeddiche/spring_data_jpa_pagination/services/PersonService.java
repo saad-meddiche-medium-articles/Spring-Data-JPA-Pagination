@@ -49,9 +49,9 @@ public class PersonService {
         return personRepository.slice(pageable);
     }
 
-    public Slice<PersonSummaryResponse> improvedSlice(Pageable pageable) {
+    public Slice<PersonSummaryResponse> slice_improved(Pageable pageable) {
 
-        Slice<Long> slicePersonIds = personRepository.improvedSlice(pageable);
+        Slice<Long> slicePersonIds = personRepository.slice_improved(pageable);
 
         List<PersonSummaryResponse> content = personRepository.findSummaryByIds(slicePersonIds.getContent());
 
@@ -59,8 +59,8 @@ public class PersonService {
 
     }
 
-    public Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable) {
-        return personRepository.sliceWithoutCount(pageable);
+    public Slice<PersonSummaryResponse> slice_withoutCount(Pageable pageable) {
+        return personRepository.slice_withoutCount(pageable);
     }
 
     // ================= Using Window =================

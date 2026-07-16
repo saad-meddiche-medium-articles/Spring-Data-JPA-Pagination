@@ -94,16 +94,16 @@ public class PersonViewController {
     public String slice(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "sliceWithoutCount") String variant,
+            @RequestParam(defaultValue = "improvedSlice") String variant,
             Model model
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
         Slice<PersonSummaryResponse> slice = switch (variant) {
             case "slice" -> personService.slice(pageable);
-            case "improvedSlice" -> personService.improvedSlice(pageable);
-            case "sliceWithoutCount" -> personService.sliceWithoutCount(pageable);
-            default -> personService.sliceWithoutCount(pageable);
+            case "improvedSlice" -> personService.slice_improved(pageable);
+            case "sliceWithoutCount" -> personService.slice_withoutCount(pageable);
+            default -> personService.slice_withoutCount(pageable);
         };
 
         model.addAttribute("slice", slice);

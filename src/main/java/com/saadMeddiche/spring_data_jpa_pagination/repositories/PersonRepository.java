@@ -58,12 +58,12 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             """
             SELECT p.id FROM Person p
             """)
-    Slice<Long> improvedSlice(Pageable pageable);
+    Slice<Long> slice_improved(Pageable pageable);
 
     @Query("""
            SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
            """)
-    Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable);
+    Slice<PersonSummaryResponse> slice_withoutCount(Pageable pageable);
 
     // ================= Using Window =================
 

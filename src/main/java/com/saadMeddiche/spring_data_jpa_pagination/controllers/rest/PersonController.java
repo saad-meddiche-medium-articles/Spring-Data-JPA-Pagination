@@ -46,13 +46,13 @@ public class PersonController {
     }
 
     @GetMapping("/improved-slice")
-    public Slice<PersonSummaryResponse> improvedSlice(Pageable pageable) {
-        return this.personService.improvedSlice(pageable);
+    public Slice<PersonSummaryResponse> slice_improved(Pageable pageable) {
+        return this.personService.slice_improved(pageable);
     }
 
     @GetMapping("/slice-without-count")
-    public Slice<PersonSummaryResponse> sliceWithoutCount(Pageable pageable) {
-        return this.personService.sliceWithoutCount(pageable);
+    public Slice<PersonSummaryResponse> slice_withoutCount(Pageable pageable) {
+        return this.personService.slice_withoutCount(pageable);
     }
 
     // ================= Using Window =================
