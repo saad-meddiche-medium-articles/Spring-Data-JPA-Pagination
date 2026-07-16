@@ -59,11 +59,11 @@ public class PersonViewController {
         Pageable pageable = PageRequest.of(zeroBasedPage, size);
 
         Page<PersonSummaryResponse> summaryPage = switch (variant) {
-            case "summaryCustomCount" -> personService.summaryCustomCount(pageable);
-            case "improvedSummary" -> personService.improvedSummary(pageable);
-            case "summaryWithoutCount" -> personService.summaryWithoutCount(pageable);
-            case "summary" -> personService.summary(pageable);
-            default -> personService.summary(pageable);
+            case "summaryCustomCount" -> personService.page_customCount(pageable);
+            case "improvedSummary" -> personService.page_improved(pageable);
+            case "summaryWithoutCount" -> personService.page_withoutCount(pageable);
+            case "summary" -> personService.page_(pageable);
+            default -> personService.page_(pageable);
         };
 
         int totalPages = summaryPage.getTotalPages();

@@ -17,7 +17,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
            FROM Person p LEFT JOIN p.products pp
            GROUP BY p.id, p.firstName, p.lastName order by p.id
            """)
-    Page<PersonSummaryResponse> summary(Pageable pageable);
+    Page<PersonSummaryResponse> page_(Pageable pageable);
 
     @Query(value =
             """
@@ -26,19 +26,19 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             GROUP BY p.id, p.firstName, p.lastName order by p.id
             """,
             countQuery = "SELECT COUNT(p) FROM Person p")
-    Page<PersonSummaryResponse> summaryCustomCount(Pageable pageable);
+    Page<PersonSummaryResponse> page_customCount(Pageable pageable);
 
     @Query(value =
            """
            SELECT p.id FROM Person p order by p.id
            """)
-    List<Long> improvedSummary(Pageable pageable);
+    List<Long> page_improved(Pageable pageable);
 
     @Query(value =
             """
             SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
             """)
-    Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable);
+    Page<PersonSummaryResponse> page_withoutCount(Pageable pageable);
 
     @Query(value = """
             SELECT COUNT(p.id) FROM Person p

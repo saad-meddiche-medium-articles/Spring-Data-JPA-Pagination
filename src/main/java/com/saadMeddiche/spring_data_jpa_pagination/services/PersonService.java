@@ -19,17 +19,17 @@ public class PersonService {
 
     // ================= Using Page =================
 
-    public Page<PersonSummaryResponse> summary(Pageable pageable) {
-        return personRepository.summary(pageable);
+    public Page<PersonSummaryResponse> page_(Pageable pageable) {
+        return personRepository.page_(pageable);
     }
 
-    public Page<PersonSummaryResponse> summaryCustomCount(Pageable pageable) {
-        return personRepository.summaryCustomCount(pageable);
+    public Page<PersonSummaryResponse> page_customCount(Pageable pageable) {
+        return personRepository.page_customCount(pageable);
     }
 
-    public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
+    public Page<PersonSummaryResponse> page_improved(Pageable pageable) {
 
-        List<Long> personIds = personRepository.improvedSummary(pageable);
+        List<Long> personIds = personRepository.page_improved(pageable);
 
         List<PersonSummaryResponse> content = personRepository.findSummaryByIds(personIds);
 
@@ -39,8 +39,8 @@ public class PersonService {
 
     }
 
-    public Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable) {
-        return personRepository.summaryWithoutCount(pageable);
+    public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable) {
+        return personRepository.page_withoutCount(pageable);
     }
 
     // ================= Using Slice =================

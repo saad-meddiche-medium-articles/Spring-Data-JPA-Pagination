@@ -18,24 +18,24 @@ public class PersonController {
 
     // ================= Using Page =================
 
-    @GetMapping("/summary")
-    public Page<PersonSummaryResponse> personSummary(Pageable pageable) {
-        return this.personService.summary(pageable);
+    @GetMapping("/page")
+    public Page<PersonSummaryResponse> page_(Pageable pageable) {
+        return this.personService.page_(pageable);
     }
 
-    @GetMapping("/summary-custom-count")
-    public Page<PersonSummaryResponse> summaryCustomCount(Pageable pageable) {
-        return this.personService.summaryCustomCount(pageable);
+    @GetMapping("/page-custom-count")
+    public Page<PersonSummaryResponse> page_customCount(Pageable pageable) {
+        return this.personService.page_customCount(pageable);
     }
 
-    @GetMapping("/improved-summary")
-    public Page<PersonSummaryResponse> improvedSummary(Pageable pageable) {
-        return this.personService.improvedSummary(pageable);
+    @GetMapping("/improved-page")
+    public Page<PersonSummaryResponse> page_improved(Pageable pageable) {
+        return this.personService.page_improved(pageable);
     }
 
-    @GetMapping("/summary-without-count")
-    public Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable) {
-        return this.personService.summaryWithoutCount(pageable);
+    @GetMapping("/page-without-count")
+    public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable) {
+        return this.personService.page_withoutCount(pageable);
     }
 
     // ================= Using Slice =================
