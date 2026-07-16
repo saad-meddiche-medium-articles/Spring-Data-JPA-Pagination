@@ -1,4 +1,4 @@
-package com.saadMeddiche.spring_data_jpa_pagination.controllers;
+package com.saadMeddiche.spring_data_jpa_pagination.controllers.view;
 
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import com.saadMeddiche.spring_data_jpa_pagination.services.PersonService;

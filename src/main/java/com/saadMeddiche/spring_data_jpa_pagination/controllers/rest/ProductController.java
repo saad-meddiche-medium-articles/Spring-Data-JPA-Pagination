@@ -1,4 +1,4 @@
-package com.saadMeddiche.spring_data_jpa_pagination.controllers;
+package com.saadMeddiche.spring_data_jpa_pagination.controllers.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

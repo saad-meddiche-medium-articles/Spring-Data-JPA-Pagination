@@ -1,16 +1,14 @@
 package com.saadMeddiche.spring_data_jpa_pagination.repositories;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
-import com.saadMeddiche.spring_data_jpa_pagination.response.PersonProductCount;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
 import java.util.List;
 
-public interface PersonRepository extends JpaRepository<Person, Long> {
+public interface PersonRepository extends JpaRepository<Person, Long>, CustomPersonRepository {
 
     // ================= Using Page =================
 
@@ -38,15 +36,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     @Query(value =
             """
-            SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
-            FROM Person p LEFT JOIN p.products pp
-            WHERE p.id in :personsIds
-            GROUP BY p.id, p.firstName, p.lastName
-            """)
-    List<PersonSummaryResponse> improvedSummary(Collection<Long> personsIds);
-
-    @Query(value =
-            """
             SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
             """)
     Page<PersonSummaryResponse> summaryWithoutCount(Pageable pageable);
@@ -71,15 +60,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             """)
     Slice<Long> improvedSlice(Pageable pageable);
 
-    @Query(value =
-            """
-            SELECT p.id, p.firstName, p.lastName, COUNT(pp.id)
-            FROM Person p LEFT JOIN p.products pp
-            WHERE p.id in :personsIds
-            GROUP BY p.id, p.firstName, p.lastName
-            """)
-    List<PersonSummaryResponse> improvedSlice(Collection<Long> personsIds);
-
     @Query("""
            SELECT p.id, p.firstName, p.lastName, 0 FROM Person p
            """)
@@ -88,14 +68,5 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     // ================= Using Window =================
 
     Window<Person> findFirst10ByOrderByIdAsc(KeysetScrollPosition position);
-
-    @Query(value =
-            """
-            SELECT p.id, COUNT(pp.id)
-            FROM Person p LEFT JOIN p.products pp
-            WHERE p.id in :personsIds
-            GROUP BY p.id
-            """)
-    List<PersonProductCount> findPersonProductCount(List<Long> personsIds);
 
 }

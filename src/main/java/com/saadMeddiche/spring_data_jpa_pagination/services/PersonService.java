@@ -2,7 +2,6 @@ package com.saadMeddiche.spring_data_jpa_pagination.services;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
 import com.saadMeddiche.spring_data_jpa_pagination.repositories.PersonRepository;
-import com.saadMeddiche.spring_data_jpa_pagination.response.PersonProductCount;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -32,7 +31,7 @@ public class PersonService {
 
         List<Long> personIds = personRepository.improvedSummary(pageable);
 
-        List<PersonSummaryResponse> content = personRepository.improvedSummary(personIds);
+        List<PersonSummaryResponse> content = personRepository.findSummaryByIds(personIds);
 
         long totalPersons = personRepository.simpleCount();
 
@@ -54,7 +53,7 @@ public class PersonService {
 
         Slice<Long> slicePersonIds = personRepository.improvedSlice(pageable);
 
-        List<PersonSummaryResponse> content = personRepository.improvedSlice(slicePersonIds.getContent());
+        List<PersonSummaryResponse> content = personRepository.findSummaryByIds(slicePersonIds.getContent());
 
         return new SliceImpl<>(content, pageable, slicePersonIds.hasNext());
 
@@ -81,11 +80,11 @@ public class PersonService {
 
         List<Long> personIds = personWindow.getContent().stream().map(Person::getId).toList();
 
-        Map<Long, Long> countMap = personRepository.findPersonProductCount(personIds).stream()
-                .collect(Collectors.toMap(PersonProductCount::personsId, PersonProductCount::productCount));
+        Map<Long, PersonSummaryResponse> countMap = personRepository.findSummaryByIds(personIds).stream()
+                .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));
 
         return personWindow.map(person ->
-                new PersonSummaryResponse(person.getId(), person.getFirstName(), person.getLastName(), countMap.getOrDefault(person.getId(), 0L))
+                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", -1L))
         );
 
     }
