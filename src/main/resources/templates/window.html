@@ -5,7 +5,7 @@
     <title>Persons - Window (Cursor) Pagination</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container py-4">
+<body class="container py-4 d-flex flex-column" style="height: 100vh;">
 
 <nav class="mb-3">
     <a class="btn btn-outline-primary me-2"
@@ -36,27 +36,31 @@
     </p>
 </div>
 
-<table class="table table-striped table-bordered">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Product count</th>
-    </tr>
-    </thead>
-    <tbody id="person-table-body"
-           th:attr="data-next-cursor=${nextCursor},data-has-next=${hasNext}">
-    <tr th:each="person : ${items}">
-        <td th:text="${person.id}">1</td>
-        <td th:text="${person.firstName}">John</td>
-        <td th:text="${person.lastName}">Doe</td>
-        <td th:text="${person.productCount}">3</td>
-    </tr>
-    </tbody>
-</table>
+<div id="person-table-container"
+     class="mt-3 flex-grow-1 overflow-auto"
+     style="min-height: 0;">
+    <table class="table table-striped table-bordered mb-0">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Product count</th>
+        </tr>
+        </thead>
+        <tbody id="person-table-body"
+               th:attr="data-next-cursor=${nextCursor},data-has-next=${hasNext}">
+        <tr th:each="person : ${items}">
+            <td th:text="${person.id}">1</td>
+            <td th:text="${person.firstName}">John</td>
+            <td th:text="${person.lastName}">Doe</td>
+            <td th:text="${person.productCount}">3</td>
+        </tr>
+        </tbody>
+    </table>
 
-<p class="text-muted">Scroll down to load more results.</p>
+    <p class="text-muted mt-2">Scroll down to load more results.</p>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -68,17 +72,26 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    const scrollContainer = document.getElementById('person-table-container') || window;
+
     let loading = false;
     let hasNext = tbody.dataset.hasNext === 'true';
     let nextCursor = tbody.dataset.nextCursor || null;
     const loadThreshold = 200; // px from bottom to start loading
 
+    const initialHeight = scrollContainer === window
+        ? document.body.offsetHeight
+        : scrollContainer.scrollHeight;
+    const viewportHeight = scrollContainer === window
+        ? window.innerHeight
+        : scrollContainer.clientHeight;
+
     console.log('[window.html] initial state', {
         hasNext,
         nextCursor,
         loadThreshold,
-        initialBodyHeight: document.body.offsetHeight,
-        viewportHeight: window.innerHeight
+        initialHeight,
+        viewportHeight
     });
 
     async function loadNextPage(source) {
@@ -137,10 +150,14 @@ document.addEventListener('DOMContentLoaded', function () {
             hasNext = data.last === false;
             nextCursor = items[items.length - 1].id != null ? items[items.length - 1].id : null;
 
+            const currentScrollHeight = scrollContainer === window
+                ? document.body.offsetHeight
+                : scrollContainer.scrollHeight;
+
             console.log('[window.html] state after append', {
                 hasNext,
                 nextCursor,
-                bodyHeight: document.body.offsetHeight
+                scrollHeight: currentScrollHeight
             });
         } catch (e) {
             console.log('[window.html] error during loadNextPage', e);
@@ -152,13 +169,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function onScroll() {
-        const scrolledToBottom =
-            window.innerHeight + window.scrollY >= document.body.offsetHeight - loadThreshold;
+        const scrollTop = scrollContainer === window
+            ? (window.scrollY || window.pageYOffset)
+            : scrollContainer.scrollTop;
+
+        const viewportHeightCurrent = scrollContainer === window
+            ? window.innerHeight
+            : scrollContainer.clientHeight;
+
+        const scrollHeight = scrollContainer === window
+            ? document.body.offsetHeight
+            : scrollContainer.scrollHeight;
+
+        const scrolledToBottom = viewportHeightCurrent + scrollTop >= scrollHeight - loadThreshold;
 
         console.log('[window.html] scroll', {
-            scrollY: window.scrollY,
-            innerHeight: window.innerHeight,
-            bodyHeight: document.body.offsetHeight,
+            scrollTop,
+            viewportHeight: viewportHeightCurrent,
+            scrollHeight,
             scrolledToBottom
         });
 
@@ -167,11 +195,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    window.addEventListener('scroll', onScroll);
-    console.log('[window.html] scroll listener attached');
+    scrollContainer.addEventListener('scroll', onScroll);
+    console.log('[window.html] scroll listener attached to',
+        scrollContainer === window ? 'window' : '#person-table-container');
 
     // If initial content is shorter than the viewport, pre-load next window once.
-    if (document.body.offsetHeight <= window.innerHeight && hasNext && nextCursor) {
+    const initialViewportHeight = scrollContainer === window
+        ? window.innerHeight
+        : scrollContainer.clientHeight;
+    const initialScrollHeight = scrollContainer === window
+        ? document.body.offsetHeight
+        : scrollContainer.scrollHeight;
+
+    if (initialScrollHeight <= initialViewportHeight && hasNext && nextCursor) {
         console.log('[window.html] auto-loading initial extra page because content < viewport');
         loadNextPage('initial');
     }
