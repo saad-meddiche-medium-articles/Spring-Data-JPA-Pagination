@@ -14,6 +14,9 @@ spring.jpa:
 spring.jpa.properties.hibernate.jdbc.batch_size: ${person-seeder.chunk-size}
 spring.jpa.properties.hibernate.order_inserts: true
 
+spring.mvc.format:
+  date: iso
+
 spring.web.error:
   include-message: always
 

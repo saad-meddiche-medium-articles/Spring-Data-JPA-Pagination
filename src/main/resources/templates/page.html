@@ -20,7 +20,37 @@
 
 <form class="row g-3 mb-3" method="get" th:action="@{/persons/view/page}">
     <input type="hidden" name="page" value="1"/>
-    <input type="hidden" name="size" th:value="${page.size}"/>
+
+    <div class="col-auto">
+        <label for="fullName" class="col-form-label">Name:</label>
+    </div>
+    <div class="col-auto">
+        <input id="fullName" type="text" class="form-control" name="fullName"
+               th:value="${filter.fullName}" placeholder="Search by name"/>
+    </div>
+
+    <div class="col-auto">
+        <label for="birthDateFrom" class="col-form-label">Birth from:</label>
+    </div>
+    <div class="col-auto">
+        <input id="birthDateFrom" type="date" class="form-control" name="birthDateFrom"
+               th:value="${filter.birthDateFrom}"/>
+    </div>
+
+    <div class="col-auto">
+        <label for="birthDateTo" class="col-form-label">Birth to:</label>
+    </div>
+    <div class="col-auto">
+        <input id="birthDateTo" type="date" class="form-control" name="birthDateTo"
+               th:value="${filter.birthDateTo}"/>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+    <div class="col-auto">
+        <a class="btn btn-secondary" th:href="@{/persons/view/page(page=1, size=${page.size}, variant=${variant})}">Clear</a>
+    </div>
 
     <div class="col-auto">
         <label for="variant" class="col-form-label">Version:</label>
@@ -71,14 +101,14 @@
 
         <li class="page-item" th:classappend="${page.first} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${1}, size=${page.size}, variant=${variant})}">
+               th:href="@{/persons/view/page(page=${1}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 First
             </a>
         </li>
 
         <li class="page-item" th:classappend="${!page.hasPrevious()} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${page.number}, size=${page.size}, variant=${variant})}">
+               th:href="@{/persons/view/page(page=${page.number}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 Previous
             </a>
         </li>
@@ -86,7 +116,7 @@
         <!-- First numbered page and leading ellipsis -->
         <li class="page-item" th:if="${startPage > 0}">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${1}, size=${page.size}, variant=${variant})}">1</a>
+               th:href="@{/persons/view/page(page=${1}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">1</a>
         </li>
         <li class="page-item disabled" th:if="${startPage > 1}">
             <span class="page-link">...</span>
@@ -97,7 +127,7 @@
             th:each="i : ${#numbers.sequence(startPage, endPage)}"
             th:classappend="${i} == ${page.number} ? 'active'">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${i + 1}, size=${page.size}, variant=${variant})}"
+               th:href="@{/persons/view/page(page=${i + 1}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}"
                th:text="${i + 1}">1</a>
         </li>
 
@@ -107,20 +137,20 @@
         </li>
         <li class="page-item" th:if="${endPage < page.totalPages - 1}">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${page.totalPages}, size=${page.size}, variant=${variant})}"
+               th:href="@{/persons/view/page(page=${page.totalPages}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}"
                th:text="${page.totalPages}">10</a>
         </li>
 
         <li class="page-item" th:classappend="${!page.hasNext()} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${page.number + 2}, size=${page.size}, variant=${variant})}">
+               th:href="@{/persons/view/page(page=${page.number + 2}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 Next
             </a>
         </li>
 
         <li class="page-item" th:classappend="${page.last} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/persons/view/page(page=${page.totalPages}, size=${page.size}, variant=${variant})}">
+               th:href="@{/persons/view/page(page=${page.totalPages}, size=${page.size}, variant=${variant}, fullName=${filter.fullName}, birthDateFrom=${filter.birthDateFrom}, birthDateTo=${filter.birthDateTo})}">
                 Last
             </a>
         </li>
@@ -138,6 +168,9 @@
            style="width: 120px;"/>
     <input type="hidden" name="size" th:value="${page.size}"/>
     <input type="hidden" name="variant" th:value="${variant}"/>
+    <input type="hidden" name="fullName" th:value="${filter.fullName}"/>
+    <input type="hidden" name="birthDateFrom" th:value="${filter.birthDateFrom}"/>
+    <input type="hidden" name="birthDateTo" th:value="${filter.birthDateTo}"/>
     <button type="submit" class="btn btn-secondary">Go</button>
 </form>
 

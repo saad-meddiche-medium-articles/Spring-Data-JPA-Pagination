@@ -1,5 +1,6 @@
 package com.saadMeddiche.spring_data_jpa_pagination.controllers.view;
 
+import com.saadMeddiche.spring_data_jpa_pagination.requests.PersonSummaryFilterRequest;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
 import com.saadMeddiche.spring_data_jpa_pagination.services.PersonService;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,15 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Window;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -22,6 +28,16 @@ import java.util.List;
 public class PersonViewController {
 
     private final PersonService personService;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(text == null || text.isBlank() ? null : LocalDate.parse(text));
+            }
+        });
+    }
 
     // Default landing: redirect to the Page solution
     @GetMapping
@@ -33,6 +49,7 @@ public class PersonViewController {
     // Exposes 1-based page numbers in the UI while keeping 0-based indexes internally
     @GetMapping("/page")
     public String page(
+            @ModelAttribute PersonSummaryFilterRequest filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "improvedSummary") String variant,
@@ -68,6 +85,7 @@ public class PersonViewController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("variant", variant);
+        model.addAttribute("filter", filter);
         return "page";
     }
 
