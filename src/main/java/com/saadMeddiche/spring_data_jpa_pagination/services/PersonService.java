@@ -1,6 +1,7 @@
 package com.saadMeddiche.spring_data_jpa_pagination.services;
 
 import com.saadMeddiche.spring_data_jpa_pagination.entities.Person;
+import com.saadMeddiche.spring_data_jpa_pagination.entities.Person_;
 import com.saadMeddiche.spring_data_jpa_pagination.repositories.PersonRepository;
 import com.saadMeddiche.spring_data_jpa_pagination.requests.PersonSummaryFilterRequest;
 import com.saadMeddiche.spring_data_jpa_pagination.response.PersonSummaryResponse;
@@ -66,13 +67,14 @@ public class PersonService {
 
     // ================= Using Window =================
 
-    public Window<PersonSummaryResponse> window(Long lastSeenId, PersonSummaryFilterRequest filter) {
+    // ================= Auto keyset
+    public Window<PersonSummaryResponse> window_autoKeyset(Long lastSeenId) {
 
         KeysetScrollPosition position = ScrollPosition.keyset();
 
         if (lastSeenId != null) {
             position = ScrollPosition.of(
-                    Map.of("id", lastSeenId),
+                    Map.of(Person_.ID, lastSeenId),
                     ScrollPosition.Direction.FORWARD
             );
         }
@@ -80,6 +82,36 @@ public class PersonService {
         Window<Person> personWindow = personRepository.findFirst10ByOrderByIdAsc(position);
 
         List<Long> personIds = personWindow.getContent().stream().map(Person::getId).toList();
+
+        Map<Long, PersonSummaryResponse> countMap = personRepository.findSummaryByIds(personIds).stream()
+                .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));
+
+        return personWindow.map(person ->
+                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", -1L))
+        );
+
+    }
+
+    // ================= Manual keyset
+    public Window<PersonSummaryResponse> window_manualKeyset(Long lastSeenId, PersonSummaryFilterRequest filter) {
+
+        // Request one extra row to detect whether there is a next window
+        Pageable pageable = PageRequest.of(0, 11);
+        List<Person> persons = personRepository.findWindow(lastSeenId, filter, pageable);
+
+        boolean hasNext = persons.size() > 10;
+        List<Person> windowContent = hasNext ? persons.subList(0, 10) : persons;
+
+        Window<Person> personWindow = Window.from(
+                windowContent,
+                index -> ScrollPosition.of(
+                        Map.of(Person_.ID, windowContent.get(index).getId()),
+                        ScrollPosition.Direction.FORWARD
+                ),
+                hasNext
+        );
+
+        List<Long> personIds = persons.stream().map(Person::getId).toList();
 
         Map<Long, PersonSummaryResponse> countMap = personRepository.findSummaryByIds(personIds).stream()
                 .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));

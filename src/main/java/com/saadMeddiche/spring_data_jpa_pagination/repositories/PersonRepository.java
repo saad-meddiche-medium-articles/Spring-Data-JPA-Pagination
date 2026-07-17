@@ -130,6 +130,24 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
 
     // ================= Using Window =================
 
+    // ================= Auto keyset
     Window<Person> findFirst10ByOrderByIdAsc(KeysetScrollPosition position);
+
+    // ================= Manual keyset
+    @Query("""
+           SELECT p
+           FROM Person p
+           WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId)
+             AND (:#{#filter == null || #filter.fullName == null} = true
+                  OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :#{#filter.fullName}, '%')))
+             AND (:#{#filter == null || #filter.birthDateFrom == null} = true
+                  OR p.birthDate >= :#{#filter.birthDateFrom})
+             AND (:#{#filter == null || #filter.birthDateTo == null} = true
+                  OR p.birthDate <= :#{#filter.birthDateTo})
+           ORDER BY p.id
+           """)
+    List<Person> findWindow(@Param("lastSeenId") Long lastSeenId,
+                            @Param("filter") PersonSummaryFilterRequest filter,
+                            Pageable pageable);
 
 }

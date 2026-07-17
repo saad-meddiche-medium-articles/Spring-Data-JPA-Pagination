@@ -121,7 +121,7 @@ public class PersonViewController {
             @ModelAttribute PersonSummaryFilterRequest filter,
             Model model
     ) {
-        Window<PersonSummaryResponse> window = personService.window(lastSeenId, filter);
+        Window<PersonSummaryResponse> window = personService.window_manualKeyset(lastSeenId, filter);
         List<PersonSummaryResponse> content = window.getContent();
 
         boolean hasNext = window.hasNext();
@@ -129,7 +129,7 @@ public class PersonViewController {
         boolean hasPrev = false;
 
         Long nextCursor = (hasNext && !content.isEmpty())
-                ? content.get(content.size() - 1).id()
+                ? content.getLast().id()
                 : null;
 
         Long prevCursor = null;

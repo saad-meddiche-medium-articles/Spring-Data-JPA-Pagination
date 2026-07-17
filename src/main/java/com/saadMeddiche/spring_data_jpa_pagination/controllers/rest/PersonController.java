@@ -69,7 +69,7 @@ public class PersonController {
     @GetMapping("/window")
     public Window<PersonSummaryResponse> window(@RequestParam(required = false) Long lastSeenId,
                                                 @ModelAttribute PersonSummaryFilterRequest filter) {
-        return this.personService.window(lastSeenId, filter);
+        return this.personService.window_manualKeyset(lastSeenId, filter);
     }
 
 }
