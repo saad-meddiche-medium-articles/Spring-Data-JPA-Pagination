@@ -81,6 +81,7 @@
         <th>ID</th>
         <th>First name</th>
         <th>Last name</th>
+        <th>Birth date</th>
         <th>Product count</th>
     </tr>
     </thead>
@@ -89,6 +90,7 @@
         <td th:text="${person.id}">1</td>
         <td th:text="${person.firstName}">John</td>
         <td th:text="${person.lastName}">Doe</td>
+        <td th:text="${person.birthDate}">—</td>
         <td th:text="${person.productCount}">3</td>
     </tr>
     </tbody>

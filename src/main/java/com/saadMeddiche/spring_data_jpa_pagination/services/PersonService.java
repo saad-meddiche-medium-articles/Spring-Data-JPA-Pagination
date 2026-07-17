@@ -87,7 +87,7 @@ public class PersonService {
                 .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));
 
         return personWindow.map(person ->
-                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", -1L))
+                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", null, -1L))
         );
 
     }
@@ -117,7 +117,7 @@ public class PersonService {
                 .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));
 
         return personWindow.map(person ->
-                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", -1L))
+                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", null, -1L))
         );
 
     }

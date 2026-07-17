@@ -33,6 +33,7 @@ public class CustomPersonRepositoryImpl implements CustomPersonRepository {
                         personRoot.get(Person_.ID),
                         personRoot.get(Person_.FIRST_NAME),
                         personRoot.get(Person_.LAST_NAME),
+                        personRoot.get(Person_.BIRTH_DATE),
                         criteriaBuilder.count(product.get(Product_.ID))
                 )
         );
@@ -44,7 +45,8 @@ public class CustomPersonRepositoryImpl implements CustomPersonRepository {
         criteriaQuery.groupBy(
                 personRoot.get(Person_.ID),
                 personRoot.get(Person_.FIRST_NAME),
-                personRoot.get(Person_.LAST_NAME)
+                personRoot.get(Person_.LAST_NAME),
+                personRoot.get(Person_.BIRTH_DATE)
         );
 
         return entityManager.createQuery(criteriaQuery).getResultList();
