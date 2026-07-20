@@ -21,7 +21,7 @@ spring.web.error:
   include-message: always
 
 person-seeder:
-  person-count: 1_000_000
+  person-count: 10_000_000
   product-per-person: 2
   chunk-size: 25_000
   enabled: false
