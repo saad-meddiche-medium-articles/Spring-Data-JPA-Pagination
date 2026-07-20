@@ -9,6 +9,9 @@ import java.util.UUID;
 
 @Entity
 @Getter @Setter
+@Table(indexes = {
+        @Index(name = "IDX_PRODUCT_OWNER", columnList = "owner_id")
+})
 public class Product {
 
     @Id
