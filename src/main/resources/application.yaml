@@ -7,6 +7,9 @@ spring.datasource:
   url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/spring-data-jpa-pagination?reWriteBatchedInserts=true}
   username: ${DATASOURCE_USERNAME:user}
   password: ${DATASOURCE_PASSWORD:1234}
+  hikari:
+    maximumPoolSize: 30
+    minimumIdle: 30
 
 spring.jpa:
   hibernate.ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:update}
