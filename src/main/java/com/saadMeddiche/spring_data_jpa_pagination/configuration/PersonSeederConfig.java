@@ -16,6 +16,8 @@ public class PersonSeederConfig {
 
     private int chunkSize = 25_000;
 
+    private int threadCount = Runtime.getRuntime().availableProcessors();
+
     private boolean enabled = true;
 
 }
