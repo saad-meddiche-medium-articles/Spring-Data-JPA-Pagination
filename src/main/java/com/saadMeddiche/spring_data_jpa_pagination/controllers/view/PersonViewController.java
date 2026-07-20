@@ -42,7 +42,7 @@ public class PersonViewController {
     // Default landing: redirect to the Page solution
     @GetMapping
     public String defaultView() {
-        return "redirect:/persons/view/page";
+        return "redirect:/persons/view/window";
     }
 
     // Page-based pagination with multiple variants
