@@ -97,27 +97,25 @@ public class PersonService {
 
         // Request one extra row to detect whether there is a next window
         Pageable pageable = PageRequest.of(0, 11);
-        List<Person> persons = personRepository.findWindow(lastSeenId, filter, pageable);
+        List<Long> personsIds = personRepository.findWindow(lastSeenId, filter, pageable);
 
-        boolean hasNext = persons.size() > 10;
-        List<Person> windowContent = hasNext ? persons.subList(0, 10) : persons;
+        boolean hasNext = personsIds.size() > 10;
+        List<Long> windowIds = hasNext ? personsIds.subList(0, 10) : personsIds;
 
-        Window<Person> personWindow = Window.from(
-                windowContent,
+        Window<Long> personWindow = Window.from(
+                windowIds,
                 index -> ScrollPosition.of(
-                        Map.of(Person_.ID, windowContent.get(index).getId()),
+                        Map.of(Person_.ID, windowIds.get(index)),
                         ScrollPosition.Direction.FORWARD
                 ),
                 hasNext
         );
 
-        List<Long> personIds = persons.stream().map(Person::getId).toList();
-
-        Map<Long, PersonSummaryResponse> countMap = personRepository.findSummaryByIds(personIds).stream()
+        Map<Long, PersonSummaryResponse> countMap = personRepository.findSummaryByIds(windowIds).stream()
                 .collect(Collectors.toMap(PersonSummaryResponse::id, response -> response));
 
-        return personWindow.map(person ->
-                countMap.getOrDefault(person.getId(), new PersonSummaryResponse(-1L, "N/A", "N/A", null, -1L))
+        return personWindow.map(personId ->
+                countMap.getOrDefault(personId, new PersonSummaryResponse(-1L, "N/A", "N/A", null, -1L))
         );
 
     }
