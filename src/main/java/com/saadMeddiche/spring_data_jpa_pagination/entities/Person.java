@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(indexes = {
-        @Index(name = "IDX_PERSON_FULL_NAME", columnList = "firstName, lastName")
+        @Index(name = "IDX_PERSON_FULL_NAME", columnList = "full_name")
 })
 public class Person {
 
