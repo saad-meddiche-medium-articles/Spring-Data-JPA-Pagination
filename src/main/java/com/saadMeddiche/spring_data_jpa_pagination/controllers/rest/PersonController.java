@@ -66,10 +66,15 @@ public class PersonController {
 
     // ================= Using Window =================
 
-    @GetMapping("/window")
-    public Window<PersonSummaryResponse> window(@RequestParam(required = false) Long lastSeenId,
-                                                @ModelAttribute PersonSummaryFilterRequest filter) {
+    @GetMapping("/window-manual-keyset")
+    public Window<PersonSummaryResponse> window_manualKeyset(@RequestParam(required = false) Long lastSeenId,
+                                                             @ModelAttribute PersonSummaryFilterRequest filter) {
         return this.personService.window_manualKeyset(lastSeenId, filter);
+    }
+
+    @GetMapping("/window-auto-keyset")
+    public Window<PersonSummaryResponse> window_autoKeyset(@RequestParam(required = false) Long lastSeenId) {
+        return this.personService.window_autoKeyset(lastSeenId);
     }
 
 }

@@ -56,7 +56,8 @@
     </div>
     <div class="col-auto">
         <select id="variant" name="variant" class="form-select" onchange="this.form.submit()">
-            <option value="default" th:selected="${variant == 'default'}">default</option>
+            <option value="manualKeyset" th:selected="${variant == 'manualKeyset'}">manualKeyset</option>
+            <option value="autoKeyset" th:selected="${variant == 'autoKeyset'}">autoKeyset</option>
         </select>
     </div>
 </form>
@@ -81,7 +82,7 @@
         </tr>
         </thead>
         <tbody id="person-table-body"
-               th:attr="data-next-cursor=${nextCursor},data-has-next=${hasNext},data-full-name=${filter.fullName},data-birth-date-from=${filter.birthDateFrom},data-birth-date-to=${filter.birthDateTo}">
+               th:attr="data-variant=${variant},data-next-cursor=${nextCursor},data-has-next=${hasNext},data-full-name=${filter.fullName},data-birth-date-from=${filter.birthDateFrom},data-birth-date-to=${filter.birthDateTo}">
         <tr th:each="person : ${items}">
             <td th:text="${person.id}">1</td>
             <td th:text="${person.firstName}">John</td>
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let loading = false;
     let hasNext = tbody.dataset.hasNext === 'true';
     let nextCursor = tbody.dataset.nextCursor || null;
+    const variant = tbody.dataset.variant || 'manualKeyset';
     const fullName = tbody.dataset.fullName || '';
     const birthDateFrom = tbody.dataset.birthDateFrom || '';
     const birthDateTo = tbody.dataset.birthDateTo || '';
@@ -149,17 +151,22 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const params = new URLSearchParams();
             params.set('lastSeenId', nextCursor);
-            if (fullName) {
-                params.set('fullName', fullName);
-            }
-            if (birthDateFrom) {
-                params.set('birthDateFrom', birthDateFrom);
-            }
-            if (birthDateTo) {
-                params.set('birthDateTo', birthDateTo);
+            if (variant === 'manualKeyset') {
+                if (fullName) {
+                    params.set('fullName', fullName);
+                }
+                if (birthDateFrom) {
+                    params.set('birthDateFrom', birthDateFrom);
+                }
+                if (birthDateTo) {
+                    params.set('birthDateTo', birthDateTo);
+                }
             }
 
-            const url = '/persons/window?' + params.toString();
+            const endpoint = variant === 'autoKeyset'
+                ? '/persons/window-auto-keyset'
+                : '/persons/window-manual-keyset';
+            const url = endpoint + '?' + params.toString();
             console.log('[window.html] fetching', url);
             const resp = await fetch(url);
             console.log('[window.html] fetch response', { status: resp.status });

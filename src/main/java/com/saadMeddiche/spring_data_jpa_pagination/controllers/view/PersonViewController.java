@@ -113,15 +113,18 @@ public class PersonViewController {
         return "slice";
     }
 
-    // Window / keyset-based pagination (variant parameter reserved for future versions)
+    // Window / keyset-based pagination with multiple variants
     @GetMapping("/window")
     public String window(
             @RequestParam(required = false) Long lastSeenId,
-            @RequestParam(defaultValue = "default") String variant,
+            @RequestParam(defaultValue = "manualKeyset") String variant,
             @ModelAttribute PersonSummaryFilterRequest filter,
             Model model
     ) {
-        Window<PersonSummaryResponse> window = personService.window_manualKeyset(lastSeenId, filter);
+        Window<PersonSummaryResponse> window = switch (variant) {
+            case "autoKeyset" -> personService.window_autoKeyset(lastSeenId);
+            default -> personService.window_manualKeyset(lastSeenId, filter);
+        };
         List<PersonSummaryResponse> content = window.getContent();
 
         boolean hasNext = window.hasNext();
