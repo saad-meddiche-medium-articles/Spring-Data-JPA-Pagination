@@ -62,6 +62,7 @@ public class PersonViewController {
             case "summaryCustomCount" -> personService.page_customCount(pageable, filter);
             case "improvedSummary" -> personService.page_improved(pageable, filter);
             case "summaryWithoutCount" -> personService.page_withoutCount(pageable, filter);
+            case "estimatedSummary" -> personService.page_estimated(pageable, filter);
             case "summary" -> personService.page_(pageable, filter);
             default -> personService.page_(pageable, filter);
         };

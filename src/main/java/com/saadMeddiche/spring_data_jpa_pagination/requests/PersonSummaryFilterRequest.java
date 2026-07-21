@@ -14,4 +14,8 @@ public record PersonSummaryFilterRequest(
         return fullName.toLowerCase();
     }
 
+    public boolean noFilterValueIsPresent() {
+        return lowerCaseFullName() == null && birthDateFrom == null && birthDateTo == null;
+    }
+
 }

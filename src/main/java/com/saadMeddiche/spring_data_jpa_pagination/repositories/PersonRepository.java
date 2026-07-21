@@ -88,6 +88,14 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             """)
     long simpleCount(@Param("filter") PersonSummaryFilterRequest filter);
 
+    @Query(value =
+            """
+            SELECT COALESCE(n_live_tup, 0) FROM pg_stat_user_tables
+            WHERE relname = 'person'
+            """,
+            nativeQuery = true)
+    long estimatedCount();
+
     // ================= Using Slice =================
 
     @Query("""

@@ -38,6 +38,12 @@ public class PersonController {
         return this.personService.page_improved(pageable, filter);
     }
 
+    @GetMapping("/estimated-page")
+    public Page<PersonSummaryResponse> page_estimated(Pageable pageable,
+                                                       @ModelAttribute PersonSummaryFilterRequest filter) {
+        return this.personService.page_estimated(pageable, filter);
+    }
+
     @GetMapping("/page-without-count")
     public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable,
                                                         @ModelAttribute PersonSummaryFilterRequest filter) {

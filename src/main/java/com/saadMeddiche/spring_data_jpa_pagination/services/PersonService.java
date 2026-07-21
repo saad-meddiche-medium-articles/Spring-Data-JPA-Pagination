@@ -41,6 +41,24 @@ public class PersonService {
 
     }
 
+    public Page<PersonSummaryResponse> page_estimated(Pageable pageable, PersonSummaryFilterRequest filter) {
+
+        List<Long> personIds = personRepository.page_improved(pageable, filter);
+
+        List<PersonSummaryResponse> content = personRepository.findSummaryByIds(personIds);
+
+        long totalPersons = 0;
+        if(filter == null || filter.noFilterValueIsPresent()) {
+            totalPersons = personRepository.estimatedCount();
+        }
+        else {
+            totalPersons = personRepository.simpleCount(filter);
+        }
+
+        return new PageImpl<>(content, pageable , totalPersons);
+
+    }
+
     public Page<PersonSummaryResponse> page_withoutCount(Pageable pageable, PersonSummaryFilterRequest filter) {
         return personRepository.page_withoutCount(pageable, filter);
     }
