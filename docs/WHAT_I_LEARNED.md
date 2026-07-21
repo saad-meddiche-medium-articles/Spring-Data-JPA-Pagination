@@ -21,7 +21,12 @@ Different ways to fetch large datasets
 - It executes two queries, one to retrieve the requested page `LIMIT 10 OFFSET 50`
 and second is a count query `COUNT(*)` to get total items to calculate total pages
 - **(+)**
+  - provides `full navigational context`: total items and total pages
+  - possibility of jumping directly to a `specific page`
 - **(-)**
+  - the **count query causes high latency** when scanning a large dataset
+  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because THE DB need to scan 6M rows and discard them
+to get the 20 targeted items.
 
 ## Slice
 - It executes one query to retrieve the requested slice `LIMIT 10+1 OFFSET 50`
