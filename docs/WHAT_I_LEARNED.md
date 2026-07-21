@@ -10,9 +10,13 @@
 - The write speed is slower, due to extra compute before each write request.
 - Can be indexed
 
+---
+
 # B-Tree index
 
 # GIN trigram index
+
+---
 
 # Pagination
 Different ways to fetch large datasets
@@ -28,6 +32,8 @@ and second is a count query `COUNT(*)` to get total items to calculate total pag
   - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because the DB needs to scan 6M rows and discard them
 to get the 20 targeted items.
 
+<img src="/docs/images/page.png" />
+
 ## Slice
 - It executes one query to retrieve the requested slice `LIMIT 10+1 OFFSET 50`
 - It adds '1' to the limit, to determine if there is a next slice.
@@ -39,6 +45,8 @@ to get the 20 targeted items.
   - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because the DB needs to scan 6M rows and discard them
     to get the 20 targeted items.
 
+<img src="/docs/images/slice.png" />
+
 ## Window (keyset / cursor pagination)
 - It executes one query to retrieve the requested window.
 - It uses a keyset/cursor from the last item `WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId) ORDER BY p.id`
@@ -49,3 +57,5 @@ because the indexed keyset is used to jump directly to next page instead of skip
 - **(-)**
   - can't jump to a specific page.
   - forced to navigate all pages to reach last page.
+
+<img src="/docs/images/window.png" />
