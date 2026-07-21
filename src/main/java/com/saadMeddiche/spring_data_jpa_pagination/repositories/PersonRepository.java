@@ -55,7 +55,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
            """
            SELECT p.id FROM Person p
            WHERE (:#{#filter == null || #filter.fullName == null} = true
-                  OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
              AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                   OR p.birthDate >= :#{#filter.birthDateFrom})
              AND (:#{#filter == null || #filter.birthDateTo == null} = true
