@@ -27,6 +27,13 @@ public class Person {
     @Column(nullable = false)
     private String lastName;
 
+    @Column(
+            name = "full_name",
+            insertable = false, updatable = false,
+            columnDefinition = "VARCHAR(512) GENERATED ALWAYS AS (LOWER(first_name || ' ' || last_name)) STORED"
+    )
+    private String fullName;
+
     private @Nullable LocalDate birthDate;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
