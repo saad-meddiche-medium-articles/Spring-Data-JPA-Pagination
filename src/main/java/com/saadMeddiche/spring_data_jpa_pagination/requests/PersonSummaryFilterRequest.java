@@ -1,5 +1,6 @@
 package com.saadMeddiche.spring_data_jpa_pagination.requests;
 
+import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 
 public record PersonSummaryFilterRequest(
@@ -9,7 +10,7 @@ public record PersonSummaryFilterRequest(
 ) {
 
     public String lowerCaseFullName() {
-        if(fullName == null) return null;
+        if(!StringUtils.hasText(fullName)) return null;
         return fullName.toLowerCase();
     }
 
