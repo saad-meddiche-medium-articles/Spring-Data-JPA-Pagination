@@ -5,8 +5,8 @@
 - Can't be indexed
 
 # Stored Columns
-- These columns are similar to the **materialized View**, they are pre-calculate and saved after writing requests.
-- Because there has the `pre-calculated` trait, there is extra disk space.
+- These columns are similar to the **materialized View**, they are pre-calculated and saved after writing requests.
+- Because they have the `pre-calculated` trait, there is extra disk space.
 - The write speed is slower, due to extra compute before each write request.
 - Can be indexed
 
@@ -25,18 +25,18 @@ and second is a count query `COUNT(*)` to get total items to calculate total pag
   - possibility of jumping directly to a `specific page`
 - **(-)**
   - the **count query causes high latency** when scanning a large dataset
-  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because THE DB need to scan 6M rows and discard them
+  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because the DB needs to scan 6M rows and discard them
 to get the 20 targeted items.
 
 ## Slice
 - It executes one query to retrieve the requested slice `LIMIT 10+1 OFFSET 50`
-- It adds '1' to the limit, to determine if there is a next slice .
+- It adds '1' to the limit, to determine if there is a next slice.
 - It uses the current page to determine if there is a previous slice.
 - **(+)**
   - faster than Page because it has no COUNT(*) query
 - **(-)**
-  - has a `limited navigational context`: no total items pr pages
-  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because THE DB need to scan 6M rows and discard them
+  - has a `limited navigational context`: no total items or pages
+  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because the DB needs to scan 6M rows and discard them
     to get the 20 targeted items.
 
 ## Window (keyset / cursor pagination)
