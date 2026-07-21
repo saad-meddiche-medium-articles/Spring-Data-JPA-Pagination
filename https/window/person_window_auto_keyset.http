@@ -1,0 +1,5 @@
+# @timeout 120s
+GET http://localhost:8080/persons/window-auto-keyset?lastSeenId=9999990
+Accept: application/json
+
+###
