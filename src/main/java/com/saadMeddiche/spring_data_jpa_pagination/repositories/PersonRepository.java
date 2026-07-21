@@ -18,7 +18,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             SELECT p.id, p.firstName, p.lastName, p.birthDate, COUNT(pp.id)
             FROM Person p LEFT JOIN p.products pp
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -32,7 +32,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             SELECT p.id, p.firstName, p.lastName, p.birthDate, COUNT(pp.id)
             FROM Person p LEFT JOIN p.products pp
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -43,7 +43,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
                     SELECT COUNT(p)
                     FROM Person p
                     WHERE (:#{#filter == null || #filter.fullName == null} = true
-                           OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                           OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
                       AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                            OR p.birthDate >= :#{#filter.birthDateFrom})
                       AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -68,7 +68,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             """
             SELECT p.id, p.firstName, p.lastName, p.birthDate, 0 FROM Person p
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -80,7 +80,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
     @Query(value = """
             SELECT COUNT(p.id) FROM Person p
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -94,7 +94,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
            SELECT p.id, p.firstName, p.lastName, p.birthDate, COUNT(pp.id)
             FROM Person p LEFT JOIN p.products pp
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -107,7 +107,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
             """
             SELECT p.id FROM Person p
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -119,7 +119,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
     @Query("""
            SELECT p.id, p.firstName, p.lastName, p.birthDate, 0 FROM Person p
             WHERE (:#{#filter == null || #filter.fullName == null} = true
-                   OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT(:#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
               AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                    OR p.birthDate >= :#{#filter.birthDateFrom})
               AND (:#{#filter == null || #filter.birthDateTo == null} = true
@@ -139,7 +139,7 @@ public interface PersonRepository extends JpaRepository<Person, Long>, CustomPer
            FROM Person p
            WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId)
              AND (:#{#filter == null || #filter.fullName == null} = true
-                  OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :#{#filter.fullName}, '%')))
+                   OR p.fullName LIKE CONCAT(:#{#filter.lowerCaseFullName()}, '%'))
              AND (:#{#filter == null || #filter.birthDateFrom == null} = true
                   OR p.birthDate >= :#{#filter.birthDateFrom})
              AND (:#{#filter == null || #filter.birthDateTo == null} = true
