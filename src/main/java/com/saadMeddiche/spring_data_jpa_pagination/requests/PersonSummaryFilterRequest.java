@@ -6,4 +6,11 @@ public record PersonSummaryFilterRequest(
         String fullName,
         LocalDate birthDateFrom,
         LocalDate birthDateTo
-) {}
+) {
+
+    public String lowerCaseFullName() {
+        if(fullName == null) return null;
+        return fullName.toLowerCase();
+    }
+
+}
