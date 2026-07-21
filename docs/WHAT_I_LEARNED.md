@@ -44,4 +44,8 @@ to get the 20 targeted items.
 - It uses a keyset/cursor from the last item `WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId) ORDER BY p.id`
 in the previous fetch to navigate directly to next window
 - **(+)**
+  - reading first or deep pages have no latency impact `O(1)`,
+because the indexed keyset is used to jump directly to next page instead of skipping/discarding them 
 - **(-)**
+  - can't jump to a specific page.
+  - forced to navigate all pages to reach last page.
