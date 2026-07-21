@@ -33,7 +33,11 @@ to get the 20 targeted items.
 - It adds '1' to the limit, to determine if there is a next slice .
 - It uses the current page to determine if there is a previous slice.
 - **(+)**
+  - faster than Page because it has no COUNT(*) query
 - **(-)**
+  - has a `limited navigational context`: no total items pr pages
+  - **deep offset request** `LIMIT 20 OFFSET 6_000_000` causes high latency because THE DB need to scan 6M rows and discard them
+    to get the 20 targeted items.
 
 ## Window (keyset / cursor pagination)
 - It executes one query to retrieve the requested window.
