@@ -18,6 +18,14 @@
 
 1. **Simple Page\<T\>**
 
+- Service
+
+![img.png](images/service-page_.png)
+
+- Repository
+
+![img.png](images/repository-page_.png)
+
 - Produced two queries, one to retrieve the requested page 
 and second is a count query to get the total items to calculate total pages.
 But the latency varies based on the page number
