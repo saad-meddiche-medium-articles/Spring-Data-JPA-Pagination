@@ -74,6 +74,7 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 - In this test I have `overridden the count query` to remove the LEFT JOIN.
 
+![img.png](images/repository-page_customCount.png)
 
 - Requesting `page 0` with a `size of 10` items:
   - Retrieval query took `0 Minutes : 0.002 Seconds`
@@ -212,3 +213,9 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 - This Page\<T\> version has lower latency compared to other versions.
 - Even tho it is faster, the shallow pages still faster than deep ones. I simply optimized the use of Page\<T\> as much as possible.
+
+---
+
+**(These are my own explanations, they may or may not be correct)**
+
+---
