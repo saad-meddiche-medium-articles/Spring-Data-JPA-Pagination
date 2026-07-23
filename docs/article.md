@@ -14,9 +14,9 @@
 # The tests
 - I created this demo to run tests against a PostgresSQL dataset seeded with ~11M persons and ~22M products, with each person having two products.
 
-## Page<T>
+## Page\<T\>
 
-1. **Simple Page<T>**
+1. **Simple Page\<T\>**
 
 - Produced two queries, one to retrieve the requested page 
 and second is a count query to get the total items to calculate total pages.
@@ -62,7 +62,7 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 - I noticed that the default count query included an `unnecessary LEFT JOIN`, we might get better results by removing that `JOIN`.
 
-2. **Page<T> with custom count**
+2. **Page\<T\> with custom count**
 
 - In this test I have `overridden the count query` to remove the LEFT JOIN.
 
@@ -118,3 +118,89 @@ Let's explain the previous results before moving on to the next improvement.
 throw them all away, and then return only the next 10 rows.
 
 ---
+
+3. **Page\<T\> improved**
+
+- In this version I've split the `OFFSET`, `JOIN` and `count` into three separate queries:
+  - The offset query: selects only the person's ID to take advantage from te index.
+  ```
+      @Query(value =
+           """
+           SELECT p.id FROM Person p
+           WHERE ... AND ...
+           ORDER BY p.id
+           """)
+    List<Long> page_improved(Pageable pageable, @Param("filter") PersonSummaryFilterRequest filter);
+  ```
+  - The join query: uses `person.id IN (:personIds)`, where :personIds corresponds the result of offset query
+  ```
+      @Query("""
+            SELECT p.id, p.firstName, p.lastName, p.birthDate, COUNT(pr.id)
+            FROM Person p LEFT JOIN p.products pr
+            WHERE p.id IN :personIds
+            GROUP BY p.id, p.firstName, p.lastName, p.birthDate
+            """)
+    List<PersonSummaryResponse> findSummaryByIds(@Param("personIds") Collection<Long> personIds);
+  ```
+  - The count query
+  ```
+      @Query(value = """
+            SELECT COUNT(p.id) FROM Person p
+            WHERE ... AND ...
+            """)
+    long simpleCount(@Param("filter") PersonSummaryFilterRequest filter);
+  ```
+
+
+- Requesting `page 0` with a `size of 10` items:
+  - Offset query took `0 Minutes : 0.001 Seconds`
+  - Join query took `0 Minutes : 0.001 Seconds`
+  - Count query took `0 Minutes : 0.196 Seconds`
+
+```
+2026-07-23T15:22:46.544+01:00 DEBUG 1692 --- [spring-data-jpa-pagination] [omcat-handler-9] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:8, Time:1, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id offset ? rows fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),20,10)]
+
+2026-07-23T15:22:46.549+01:00 DEBUG 1692 --- [spring-data-jpa-pagination] [omcat-handler-9] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:8, Time:1, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by 1,2,3,4"]
+Params:[(2000022,2000023,2000024,2000025,2000026,2000027,2000028,2000029,2000030,2000031)]
+
+2026-07-23T15:22:46.747+01:00 DEBUG 1692 --- [spring-data-jpa-pagination] [omcat-handler-9] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:8, Time:196, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select count(p1_0.id) from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?)"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
+```
+
+- Requesting `page 1_110_000` with a `size of 10` items:
+  - Offset query took `0 Minutes : 1.183 Seconds`
+  - Join query took `0 Minutes : 0.007 Seconds`
+  - Count query took `0 Minutes : 0.534 Seconds`
+
+```
+2026-07-23T16:05:13.059+01:00 DEBUG 15756 --- [spring-data-jpa-pagination] [omcat-handler-4] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:6, Time:1183, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id offset ? rows fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11099990,10)]
+
+2026-07-23T16:05:13.069+01:00 DEBUG 15756 --- [spring-data-jpa-pagination] [omcat-handler-4] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:6, Time:7, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date"]
+Params:[(13099992,13099993,13099994,13099995,13099996,13099997,13099998,13099999,13100000,13100001)]
+
+2026-07-23T16:05:13.605+01:00 DEBUG 15756 --- [spring-data-jpa-pagination] [omcat-handler-4] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:6, Time:534, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select count(p1_0.id) from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?)"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
+```
+
+- This Page\<T\> version has lower latency compared to other versions.
+- Even tho it is faster, the shallow pages still faster than deep ones. I simply optimized the use of Page\<T\> as much as possible.
