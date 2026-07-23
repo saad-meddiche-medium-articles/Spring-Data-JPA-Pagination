@@ -105,3 +105,16 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 - As I expected, the count query's latency improved significantly, but that of the retrieval query remained unchanged.
 - The benefit we gained from this custom count query lies in its low latency but only for the first pages; latency for last pages stayed high.
+
+---
+
+**(These are my own explanations, they may or may not be correct)**
+
+Let's explain the previous results before moving on to the next improvement.
+
+- The `LEFT JOIN` in the `default count query` forced the database to perform millions of joins across ~11M persons and ~22M products simply to group and count the rows.
+- The `custom count query` eliminated the unnecessary `JOIN` and `GROUP BY`, which sped up the count from `~22 seconds` to `~0.2 - 1.7 seconds` (an improvement of over 90%).
+- The retrieval query remained slow because of `OFFSET`: the database must scan, sort, join and process the first `11,099,990` rows,
+throw them all away, and then return only the next 10 rows.
+
+---
