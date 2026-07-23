@@ -59,3 +59,49 @@ Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
 Query:["select count(p1_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) group by p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date"]
 Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 ```
+
+- I noticed that the default count query included an `unnecessary LEFT JOIN`, we might get better results by removing that `JOIN`.
+
+2. **Page<T> with custom count**
+
+- In this test I have `overridden the count query` to remove the LEFT JOIN.
+
+
+- Requesting `page 0` with a `size of 10` items:
+  - Retrieval query took `0 Minutes : 0.002 Seconds`
+  - Count query took `0 Minutes : 0.207 Seconds`
+
+```
+2026-07-23T13:23:22.513+01:00 DEBUG 28032 --- [spring-data-jpa-pagination] [mcat-handler-15] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:11, Time:3, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) group by p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date order by p1_0.id offset ? rows fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),40,10)]
+
+2026-07-23T13:23:22.724+01:00 DEBUG 28032 --- [spring-data-jpa-pagination] [mcat-handler-15] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:11, Time:207, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select count(p1_0.id) from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?)"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
+```
+
+- Requesting `page 1_110_000` with a `size of 10` items:
+  - Retrieval query took `3 Minutes : 30.366 Seconds`
+  - Count query took `0 Minutes : 1.76 Seconds`
+  - Also, higher disk read activity
+
+```
+Name:dataSource, Connection:12, Time:210366, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) group by p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date order by p1_0.id offset ? rows fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11099990,10)]
+
+2026-07-23T13:29:37.962+01:00 DEBUG 28032 --- [spring-data-jpa-pagination] [mcat-handler-18] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:12, Time:1760, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select count(p1_0.id) from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?)"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
+```
+
+- As I expected, the count query's latency improved significantly, but that of the retrieval query remained unchanged.
+- The benefit we gained from this custom count query lies in its low latency but only for the first pages; latency for last pages stayed high.
