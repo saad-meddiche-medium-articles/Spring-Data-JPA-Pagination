@@ -235,3 +235,18 @@ While deep offsets still require scanning the index leaf pages (explaining why `
 overall latency drops from `~3.5 minutes` to `~1.7 seconds`.
 
 ---
+
+- So far, We've found the best optimal solution using Page<T>, but are there any other solutions/approaches that could solve this problem ?!
+
+
+- I discovered several different approaches, two of them are Slice<T> and Window<T>.
+
+---
+
+## Slice\<T\>
+
+(coming soon !!)
+
+## Window\<T\>
+
+(coming soon !!)
