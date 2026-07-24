@@ -17,7 +17,7 @@
 
 ## Page\<T\>
 
-1. **Simple Page\<T\>**
+1. **What Spring give us out of the box** 
 
 - Service
 
@@ -71,7 +71,7 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 - I noticed that the default count query included an `unnecessary LEFT JOIN`, we might get better results by removing that `JOIN`.
 
-2. **Page\<T\> with custom count**
+2. **Removing the unnecessary COUNT JOIN**
 
 - In this test I have `overridden the count query` to remove the LEFT JOIN.
 
@@ -133,7 +133,7 @@ throw them all away, and then return only the next 10 rows.
 
 ---
 
-3. **Page\<T\> improved**
+3. **Splitting the OFFSET from the JOIN**
 
 - In this version I've split the `OFFSET`, `JOIN` and `count` into three separate queries:
   - The offset query: selects only the person's ID to take advantage from te index.
