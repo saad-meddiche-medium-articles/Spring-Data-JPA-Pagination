@@ -361,3 +361,5 @@ Params:[(11000001,11000002,11000003,11000004,11000005,11000006,11000007,11000008
 <img src="/docs/images/slice.png" />
 
 <img src="/docs/images/window.png" />
+
+<img src="/docs/images/window.gif" />
