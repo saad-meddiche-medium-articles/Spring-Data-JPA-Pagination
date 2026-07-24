@@ -11,8 +11,9 @@
 - This latency didn't cause any issues in production, since the user applies a filter that generates either a single page or several dozens pages.
 - BUTTT The curious me wanted to understand the "why" !!
 
-# The tests
-- I created this demo to run tests against a PostgresSQL dataset seeded with ~11M persons and ~22M products, with each person having two products.
+# The Demo
+- I created a demo to run tests against a PostgresSQL dataset seeded with ~11M persons and ~22M products, with each person having two products.
+- Feel free to run the demo locally and conduct your own tests. [GitHub Repo](https://github.com/saad-meddiche-medium-articles/Spring-Data-JPA-Pagination)
 
 ## Page\<T\>
 
