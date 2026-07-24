@@ -237,7 +237,9 @@ While deep offsets still require scanning the index leaf pages (explaining why `
 overall latency drops from `~3.5 minutes` to `~1.7 seconds`.
 
 ---
+
 <img src="/docs/images/page.png" />
+
 ---
 
 - So far, We've found the best optimal solution using Page<T>, but are there any other solutions/approaches that could solve this problem ?!
@@ -302,7 +304,9 @@ Params:[(13099902,13099903,13099904,13099905,13099906,13099907,13099908,13099909
 - Technically, it’s possible to access a specific page, but only if you already know its number.
 
 ---
+
 <img src="/docs/images/slice.png" />
+
 ---
 
 ## Window\<T\>
@@ -361,5 +365,7 @@ Params:[(11000001,11000002,11000003,11000004,11000005,11000006,11000007,11000008
 - There is no latency neither in the first rows nor in the last rows, because the DB jumps directly to the row via `WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId)`, without any prior scanning.
 
 ---
+
 <img src="/docs/images/window.gif" />
+
 ---
