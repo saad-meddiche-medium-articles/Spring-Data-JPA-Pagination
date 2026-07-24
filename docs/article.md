@@ -13,7 +13,8 @@
 
 # The Demo
 - I created a demo to run tests against a PostgresSQL dataset seeded with ~11M persons and ~22M products, with each person having two products.
-- Feel free to run the demo locally and conduct your own tests. [GitHub Repo](https://github.com/saad-meddiche-medium-articles/Spring-Data-JPA-Pagination)
+- Feel free to run the demo locally and conduct your own tests. [GitHub Repo](https://github.com/saad-meddiche-medium-articles/Spring-Data-JPA-Pagination).
+- Tweak the seeder properties in `application.yaml`, and spin the database from `docker-compose.yaml`
 
 ## Page\<T\>
 
