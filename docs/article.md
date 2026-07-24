@@ -241,13 +241,65 @@ overall latency drops from `~3.5 minutes` to `~1.7 seconds`.
 - So far, We've found the best optimal solution using Page<T>, but are there any other solutions/approaches that could solve this problem ?!
 
 
-- I discovered several different approaches, two of them are Slice<T> and Window<T>.
+- I discovered several different approaches, two of them are Slice\<T\> and Window\<T\>.
 
 ---
 
 ## Slice\<T\>
 
-(coming soon !!)
+- Service
+
+![img.png](images/service-slice_improved.png)
+
+- Repository
+
+![img.png](images/repository-slice_improved.png)
+
+- **NOTE: I skipped directly to the splitting strategy**, but the code source have other "bad" versions
+
+
+- Requesting `page 0` with a `size of 10` items:
+  - Offset query took `0 Minutes : 0.001 Seconds`
+  - Join query took `0 Minutes : 0.001 Seconds`
+
+```
+Name:dataSource, Connection:6, Time:1, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11)]
+
+2026-07-24T12:12:34.118+01:00 DEBUG 27488 --- [spring-data-jpa-pagination] [omcat-handler-4] n.t.d.l.l.SLF4JQueryLoggingListener      :
+Name:dataSource, Connection:6, Time:1, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by 1,2,3,4"]
+Params:[(2000002,2000003,2000004,2000005,2000006,2000007,2000008,2000009,2000010,2000011)]
+```
+
+- Requesting `page 1_110_000` with a `size of 10` items:
+  - Offset query took `0 Minutes : 0.828 Seconds`
+  - Join query took `0 Minutes : 0.009 Seconds`
+
+```
+Name:dataSource, Connection:13, Time:828, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id offset ? rows fetch first ? rows only"]
+Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11099900,11)]
+
+2026-07-24T12:16:48.979+01:00 DEBUG 27488 --- [spring-data-jpa-pagination] [mcat-handler-20] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:13, Time:9, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by 1,2,3,4"]
+Params:[(13099902,13099903,13099904,13099905,13099906,13099907,13099908,13099909,13099910,13099911)]
+```
+
+---
+
+- The first thing I noticed was the absence of the `COUNT` query which resulted in low latency.
+- The **Slice** also uses the `OFFSET`, which explains the latency in deep pages.
+- Its `navigational context` is limited compared to Page, you only go backward **(Previous)** or forward **(Next)**.
+- Technically, it’s possible to access a specific page, but only if you already know its number.
+
+---
 
 ## Window\<T\>
 
