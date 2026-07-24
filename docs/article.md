@@ -306,14 +306,16 @@ Params:[(13099902,13099903,13099904,13099905,13099906,13099907,13099908,13099909
 - This is a completely different approach: instead of pages, a keyset used as cursor-based pagination.
 - The keyset allows direct access to the requested rows, unlike OFFSET that scans all preceding rows before discarding them.
 - Normally, the keyset should contain the column by which the user wants to sort the data, but I used the ID for simplicity.
-- Also, I've set up two versions: and a **manual** and **automatic** version. The article will cover only the first one.
+- Also, I've set up two versions: a **manual** and **automatic** version. The article will cover only the first one.
   - The automatic version lacks the filter, because I couldn't mix the use of `@Query` with `Window`
 
 
 - Service
+
 ![img.png](images/service-window_manualKeyset.png)
 
 - Repository
+
 ![img.png](images/repository-window_manualKeyset.png)
 
 
