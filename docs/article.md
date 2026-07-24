@@ -303,7 +303,56 @@ Params:[(13099902,13099903,13099904,13099905,13099906,13099907,13099908,13099909
 
 ## Window\<T\>
 
-(coming soon !!)
+- This is a completely different approach: instead of pages, a keyset used as cursor-based pagination.
+- The keyset allows direct access to the requested rows, unlike OFFSET that scans all preceding rows before discarding them.
+- Normally, the keyset should contain the column by which the user wants to sort the data, but I used the ID for simplicity.
+- Also, I've set up two versions: and a **manual** and **automatic** version. The article will cover only the first one.
+  - The automatic version lacks the filter, because I couldn't mix the use of `@Query` with `Window`
+
+
+- Service
+![img.png](images/service-window_manualKeyset.png)
+
+- Repository
+![img.png](images/repository-window_manualKeyset.png)
+
+
+- Requesting `ID 1` with a `size of 10` items:
+  - Window query took `0 Minutes : 0.002 Seconds`
+  - Join query took `0 Minutes : 0.004 Seconds`
+  
+```
+2026-07-24T13:15:02.943+01:00 DEBUG 16896 --- [spring-data-jpa-pagination] [omcat-handler-5] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:7, Time:2, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (? is null or p1_0.id>?) and (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id fetch first ? rows only"]
+Params:[(2000011,2000011,true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11)]
+
+2026-07-24T13:15:02.952+01:00 DEBUG 16896 --- [spring-data-jpa-pagination] [omcat-handler-5] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:7, Time:4, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by 1,2,3,4"]
+Params:[(2000012,2000013,2000014,2000015,2000016,2000017,2000018,2000019,2000020,2000021)]
+```
+
+- Requesting `ID 11_000_000` with a `size of 10` items:
+  - window query took `0 Minutes : 0.001 Seconds`
+  - Join query took `0 Minutes : 0.002 Seconds`
+  
+```
+Name:dataSource, Connection:9, Time:2, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id from person p1_0 where (? is null or p1_0.id>?) and (?=true or p1_0.full_name like (?||'%') escape '') and (?=true or p1_0.birth_date>=?) and (?=true or p1_0.birth_date<=?) order by p1_0.id fetch first ? rows only"]
+Params:[(11000000,11000000,true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE),11)]
+
+2026-07-24T13:22:30.464+01:00 DEBUG 16896 --- [spring-data-jpa-pagination] [omcat-handler-9] n.t.d.l.l.SLF4JQueryLoggingListener      : 
+Name:dataSource, Connection:9, Time:2, Success:True
+Type:Prepared, Batch:False, QuerySize:1, BatchSize:0
+Query:["select p1_0.id,p1_0.first_name,p1_0.last_name,p1_0.birth_date,count(p2_0.id) from person p1_0 left join product p2_0 on p1_0.id=p2_0.owner_id where p1_0.id in (?,?,?,?,?,?,?,?,?,?) group by 1,2,3,4"]
+Params:[(11000001,11000002,11000003,11000004,11000005,11000006,11000007,11000008,11000009,11000010)]
+```
+
+- There is no latency neither in the first rows nor in the last rows, because the DB jumps directly to the row via `WHERE (:lastSeenId IS NULL OR p.id > :lastSeenId)`, without any prior scanning.
 
 ### Views
 
