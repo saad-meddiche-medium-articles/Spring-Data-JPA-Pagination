@@ -122,7 +122,11 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 Let's explain the previous results before moving on to the next improvement.
 
 - The `LEFT JOIN` in the `default count query` forced the database to perform millions of joins across ~11M persons and ~22M products simply to group and count the rows.
+
+
 - The `custom count query` eliminated the unnecessary `JOIN` and `GROUP BY`, which sped up the count from `~22 seconds` to `~0.2 - 1.7 seconds` (an improvement of over 90%).
+
+
 - The retrieval query remained slow because of `OFFSET`: the database must scan, sort, join and process the first `11,099,990` rows,
 throw them all away, and then return only the next 10 rows.
 
@@ -222,7 +226,9 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 The DB takes advantage of the B-tree index's nature, it accesses the first page in `O(log N)` time, then it follows the horizontally linked leaf pages until it reaches the required OFFSET
 before loading 10 IDs.
 
+
 - **The Join Query:** Takes only the 10 fetched IDs `(WHERE p.id IN (...))` and performs the `LEFT JOIN` and `GROUP BY` on just those 10 records.
+
 
 - As a result, the expensive join overhead drops from `11M rows` to exactly `10 rows`.
 While deep offsets still require scanning the index leaf pages (explaining why `page 1_110_000` takes `~1.18s` vs `~1ms` for `page 0`),
