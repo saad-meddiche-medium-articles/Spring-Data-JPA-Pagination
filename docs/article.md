@@ -218,4 +218,14 @@ Params:[(true,NULL(VARCHAR),true,NULL(DATE),true,NULL(DATE))]
 
 **(These are my own explanations, they may or may not be correct)**
 
+- **The Offset Query:** selects only the indexed primary key (p.id) using OFFSET and LIMIT. 
+The DB takes advantage of the B-tree index's nature, it accesses the first page in `O(log N)` time, then it follows the horizontally linked leaf pages until it reaches the required OFFSET
+before loading 10 IDs.
+
+- **The Join Query:** Takes only the 10 fetched IDs `(WHERE p.id IN (...))` and performs the `LEFT JOIN` and `GROUP BY` on just those 10 records.
+
+- As a result, the expensive join overhead drops from `11M rows` to exactly `10 rows`.
+While deep offsets still require scanning the index leaf pages (explaining why `page 1_110_000` takes `~1.18s` vs `~1ms` for `page 0`),
+overall latency drops from `~3.5 minutes` to `~1.7 seconds`.
+
 ---
