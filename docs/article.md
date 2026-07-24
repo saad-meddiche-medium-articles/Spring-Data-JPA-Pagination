@@ -251,3 +251,11 @@ overall latency drops from `~3.5 minutes` to `~1.7 seconds`.
 ## Window\<T\>
 
 (coming soon !!)
+
+### Views
+
+<img src="/docs/images/page.png" />
+
+<img src="/docs/images/slice.png" />
+
+<img src="/docs/images/window.png" />
