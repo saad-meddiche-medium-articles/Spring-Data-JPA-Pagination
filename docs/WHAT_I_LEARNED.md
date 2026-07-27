@@ -13,8 +13,10 @@
 ---
 
 # B-Tree index
+(coming soon)
 
 # GIN trigram index
+(coming soon)
 
 ---
 
