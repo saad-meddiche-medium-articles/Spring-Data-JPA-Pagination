@@ -5,8 +5,9 @@ with each person having two products.
 
 # Docs
 
-- This [article](docs/article.md) describes the problem, my observations and my own explanations.
+- Here [article](docs/article.md) I described the problem, my observations and my own explanations.
 - Here [WHAT_I_LEARNED](docs/WHAT_I_LEARNED.md) I mentioned other things I discovered while studying **Different Pagination Strategies**.
+- Medium article link: 
 
 # How to run and play with project
 
@@ -19,3 +20,25 @@ with each person having two products.
 <img src="/docs/images/page.png">
 <img src="/docs/images/slice.png">
 <img src="/docs/images/window.gif">
+
+
+Here's a concise TL;DR section to summarize the findings:
+
+---
+
+## TL;DR
+
+- **The Problem:** Deep pages in `OFFSET`-based pagination are slow because the database must scan, sort, join, and discard millions of rows before returning the requested page. Additionally, Spring's default `Page<T>` executes an expensive `COUNT` query with unnecessary `JOIN`s.
+
+
+- **Optimization 1 (Custom Count Query):** Removing unnecessary `JOIN`s and `GROUP BY` clauses from the `COUNT` query improves count latency by over 90% (from ~22s to <1.7s).
+
+
+- **Optimization 2 (Split OFFSET from JOINs):** Fetching indexed IDs first via `OFFSET`, then loading details using `WHERE id IN (...)`, eliminates heavy join operations on discarded rows—reducing deep-page latency from **~3.5 minutes to ~1.7 seconds**.
+
+
+- **Alternative Approaches:**
+  - **`Slice<T>`:** Drops the expensive `COUNT` query, suitable when total page counts are not required.
+  - **`Window<T>` (Keyset / Cursor Pagination):** Replaces `OFFSET` with a cursor (`WHERE id > :lastSeenId`). It jumps directly to the target record, maintaining consistent **~2ms query times** regardless of depth.
+
+---
