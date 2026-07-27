@@ -369,3 +369,6 @@ Params:[(11000001,11000002,11000003,11000004,11000005,11000006,11000007,11000008
 <img src="/docs/images/window.gif" />
 
 ---
+
+- I learned other things I discovered while studying Different Pagination Strategies.
+- If you're interested, take a look at my [GitHub repository](https://github.com/saad-meddiche-medium-articles/Spring-Data-JPA-Pagination/blob/master/docs/WHAT_I_LEARNED.md).
