@@ -7,7 +7,7 @@ with each person having two products.
 
 - Here [article](docs/article.md) I described the problem, my observations and my own explanations.
 - Here [WHAT_I_LEARNED](docs/WHAT_I_LEARNED.md) I mentioned other things I discovered while studying **Different Pagination Strategies**.
-- Medium article link: 
+- Medium article -> [link](https://medium.com/@saadmeddiche2004201/why-is-page-1-fast-but-page-20k-slow-c1020b1cbc44)
 
 # How to run and play with project
 
