@@ -1,6 +1,6 @@
 # Different Pagination Strategies
 
-- I created this demo project to run **Different Pagination Strategies** against a PostgresSQL dataset seeded with ~11M persons and ~22M products,
+- I created this demo project to run **Different Pagination Strategies** **(Page, Slice, Window)** against a PostgresSQL dataset seeded with ~11M persons and ~22M products,
 with each person having two products.
 
 # Docs
